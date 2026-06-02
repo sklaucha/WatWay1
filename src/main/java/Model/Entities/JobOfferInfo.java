@@ -1,4 +1,5 @@
 package Model.Entities;
+import Model.Enums.AgenciasEnum;
 import lombok.*;
 @Getter
 @Setter
@@ -8,7 +9,7 @@ import lombok.*;
 @ToString
 
 public class JobOfferInfo {
-    private String companyname;
-    private
+    private AgenciasEnum agencia;
+    private  JobsInfo Trabajo;
 
 }

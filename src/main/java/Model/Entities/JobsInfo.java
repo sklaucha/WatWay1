@@ -9,7 +9,8 @@ import lombok.*;
 @Builder
 @ToString
 public class JobsInfo {
-
+    private DestinoInfo destino;
+    private String employerName;
     private List<String> positions;
     private String WageXhour;
     private Integer minimum_hours;

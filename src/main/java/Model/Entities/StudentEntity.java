@@ -7,7 +7,7 @@ import lombok.*;
 @ToString
 @Builder
 
-public class PaxEntity {
+public class StudentEntity {
 private String Name;
 private Integer Age;
 private String Dni;

@@ -8,7 +8,8 @@ import lombok.*;
 @ToString
 
 public class HousingEntity {
-    private String location;
+    private DestinoInfo location;
+    private String addres;
     private String costo;
 
 }
