@@ -1,4 +1,4 @@
-package Model.Entities;
+package com.example.demo.Model.Entities;
 import lombok.*;
 @Getter
 @Setter

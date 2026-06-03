@@ -1,6 +1,6 @@
-package Model.Entities;
+package com.example.demo.Model.Entities;
 
-import Model.Enums.Sexo;
+import com.example.demo.Model.Enums.Sexo;
 import jakarta.persistence.*;
 import lombok.*;
 

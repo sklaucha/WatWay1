@@ -1,7 +1,7 @@
-package Model.Services;
+package com.example.demo.Model.Services;
 
-import Model.DTO.RegisterRequestDTO;
-import Model.DTO.UsuarioResponseDTO;
+import com.example.demo.Model.DTO.RegisterRequestDTO;
+import com.example.demo.Model.DTO.UsuarioResponseDTO;
 
 import java.util.List;
 

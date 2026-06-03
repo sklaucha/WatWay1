@@ -1,6 +1,6 @@
-package Model.DTO;
+package com.example.demo.Model.DTO;
 
-import Model.Enums.Sexo;
+import com.example.demo.Model.Enums.Sexo;
 import lombok.Builder;
 import lombok.Data;
 

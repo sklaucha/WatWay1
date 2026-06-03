@@ -1,10 +1,9 @@
-package Services.Impl;
-
-import Model.DTO.RegisterRequestDTO;
-import Model.DTO.UsuarioResponseDTO;
-import Model.Entities.UsuarioEntity;
-import Model.Repositories.UsuarioRepository;
-import Model.Services.UsuarioService;
+package com.example.demo.Model.Services;
+import com.example.demo.Model.DTO.RegisterRequestDTO;
+import com.example.demo.Model.DTO.UsuarioResponseDTO;
+import com.example.demo.Model.Entities.UsuarioEntity;
+import com.example.demo.Model.Repository.UsuarioRepository;
+import com.example.demo.Model.Services.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
