@@ -9,6 +9,5 @@ import lombok.*;
 
 public class JobOfferInfo {
     private String companyname;
-    private
 
 }
