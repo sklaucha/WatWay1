@@ -14,4 +14,6 @@ public interface UsuarioService {
     List<UsuarioResponseDTO> listarUsuarios();
 
     void eliminarUsuario(Long id);
+
+    void eliminarCuenta();
 }

@@ -1,10 +1,13 @@
 package com.example.demo.Model.Services;
+
 import com.example.demo.Model.DTO.RegisterRequestDTO;
 import com.example.demo.Model.DTO.UsuarioResponseDTO;
 import com.example.demo.Model.Entities.UsuarioEntity;
 import com.example.demo.Model.Repository.UsuarioRepository;
-import com.example.demo.Model.Services.UsuarioService;
+import com.example.demo.Seguridad.Entities.CredentialsEntity;
+import com.example.demo.Seguridad.Repositories.CredentialsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +18,14 @@ import java.util.List;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final CredentialsRepository credentialsRepository;
 
     private final BCryptPasswordEncoder passwordEncoder =
             new BCryptPasswordEncoder();
 
     @Override
     public UsuarioResponseDTO crearUsuario(RegisterRequestDTO request) {
-
-        if(usuarioRepository.existsByEmail(request.getEmail())){
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
         }
 
@@ -38,22 +41,18 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .build();
 
         usuario = usuarioRepository.save(usuario);
-
         return convertir(usuario);
     }
 
     @Override
     public UsuarioResponseDTO obtenerUsuario(Long id) {
-
         UsuarioEntity usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
         return convertir(usuario);
     }
 
     @Override
     public List<UsuarioResponseDTO> listarUsuarios() {
-
         return usuarioRepository.findAll()
                 .stream()
                 .map(this::convertir)
@@ -62,12 +61,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void eliminarUsuario(Long id) {
-
         usuarioRepository.deleteById(id);
     }
 
-    private UsuarioResponseDTO convertir(UsuarioEntity usuario){
+    @Override
+    public void eliminarCuenta() {
+        CredentialsEntity credentials = (CredentialsEntity)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        UsuarioEntity usuario = usuarioRepository.findByEmail(credentials.getEmail())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        credentialsRepository.delete(credentials);
+        usuarioRepository.delete(usuario);
+    }
+
+    private UsuarioResponseDTO convertir(UsuarioEntity usuario) {
         return UsuarioResponseDTO.builder()
                 .id(usuario.getId())
                 .nombre(usuario.getNombre())

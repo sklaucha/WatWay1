@@ -59,6 +59,11 @@ public class CredentialsEntity implements UserDetails {
     }
 
     @Override
+    public boolean isEnabled() {
+        return usuario != null && usuario.isActivo();
+    }
+
+    @Override
     public String getPassword() {
         return this.password;
     }
@@ -80,11 +85,6 @@ public class CredentialsEntity implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
         return true;
     }
 }

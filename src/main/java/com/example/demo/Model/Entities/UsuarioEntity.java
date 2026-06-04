@@ -70,4 +70,8 @@ public class UsuarioEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() { return true; }
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean activo = true;
 }

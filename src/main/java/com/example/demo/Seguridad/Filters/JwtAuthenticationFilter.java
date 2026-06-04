@@ -1,6 +1,7 @@
 package com.example.demo.Seguridad.Filters;
 
 import com.example.demo.Seguridad.Services.JwtService;
+import com.example.demo.Seguridad.Services.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -41,24 +43,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = authHeader.substring(7);
-        System.out.println("TOKEN RECIBIDO: " + jwt);
+
+        if (tokenBlacklistService.isBlacklisted(jwt)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token invalidado. Iniciá sesión de nuevo.\"}");
+            response.getWriter().flush();
+            return;
+        }
 
         try {
             final String username = jwtService.extractUsername(jwt);
-            System.out.println("USERNAME EXTRAIDO: " + username);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                System.out.println("USER DETAILS CARGADO: " + userDetails.getUsername());
-
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    System.out.println("TOKEN VALIDO - autenticando");
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                } else {
-                    System.out.println("TOKEN INVALIDO");
                 }
             }
         } catch (Exception e) {
