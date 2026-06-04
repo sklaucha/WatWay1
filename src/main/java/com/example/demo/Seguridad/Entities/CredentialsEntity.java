@@ -30,7 +30,7 @@ public class CredentialsEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", referencedColumnName = "id", unique = true)
     private UsuarioEntity usuario;
 

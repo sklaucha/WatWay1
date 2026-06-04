@@ -7,11 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface MatchRepository extends JpaRepository<MatchEntity, Long> {
 
-    Optional<MatchEntity> findByUsuarioOrigenAndUsuarioDestino(
+    List<MatchEntity> findByUsuarioOrigenAndUsuarioDestino(
             UsuarioEntity usuarioOrigen, UsuarioEntity usuarioDestino);
 
     List<MatchEntity> findByUsuarioOrigenAndMatched(UsuarioEntity usuarioOrigen, boolean matched);
@@ -23,4 +22,7 @@ public interface MatchRepository extends JpaRepository<MatchEntity, Long> {
 
     boolean existsByUsuarioOrigenAndUsuarioDestino(
             UsuarioEntity usuarioOrigen, UsuarioEntity usuarioDestino);
+
+    @Query("SELECT m.usuarioDestino.id FROM MatchEntity m WHERE m.usuarioOrigen = :usuario")
+    List<Long> findUsuariosEvaluadosByOrigen(@Param("usuario") UsuarioEntity usuario);
 }

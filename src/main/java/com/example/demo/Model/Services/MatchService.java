@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,20 +31,12 @@ public class MatchService {
     public List<UsuarioMatchDTO> getCandidatos() {
         UsuarioEntity actual = getUsuarioActual();
 
-        // Usuarios que ya fueron evaluados
-        List<Long> yaEvaluados = matchRepository
-                .findAll()
-                .stream()
-                .filter(m -> m.getUsuarioOrigen().getId().equals(actual.getId()))
-                .map(m -> m.getUsuarioDestino().getId())
-                .collect(Collectors.toList());
+        List<Long> yaEvaluados = matchRepository.findUsuariosEvaluadosByOrigen(actual);
+        yaEvaluados.add(actual.getId());
 
-        yaEvaluados.add(actual.getId()); // excluir a sí mismo
-
-        return usuarioRepository.findAll()
+        return usuarioRepository.findByCiudadDestinoIgnoreCaseAndIdNotIn(
+                        actual.getCiudadDestino(), yaEvaluados)
                 .stream()
-                .filter(u -> !yaEvaluados.contains(u.getId()))
-                .filter(u -> u.getCiudadDestino().equalsIgnoreCase(actual.getCiudadDestino()))
                 .map(this::toMatchDTO)
                 .collect(Collectors.toList());
     }
@@ -55,7 +46,10 @@ public class MatchService {
         UsuarioEntity destino = usuarioRepository.findById(usuarioDestinoId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Guardar el like
+        if (matchRepository.existsByUsuarioOrigenAndUsuarioDestino(origen, destino)) {
+            return "Ya evaluaste a este usuario anteriormente.";
+        }
+
         MatchEntity match = MatchEntity.builder()
                 .usuarioOrigen(origen)
                 .usuarioDestino(destino)
@@ -64,16 +58,14 @@ public class MatchService {
                 .build();
         matchRepository.save(match);
 
-        // Ver si el otro también dio like
-        Optional<MatchEntity> likeRecíproco = matchRepository
+        List<MatchEntity> likeRecíproco = matchRepository
                 .findByUsuarioOrigenAndUsuarioDestino(destino, origen);
 
-        if (likeRecíproco.isPresent() && likeRecíproco.get().isLiked()) {
-            // Es un match — actualizar ambos
+        if (!likeRecíproco.isEmpty() && likeRecíproco.get(0).isLiked()) {
             match.setMatched(true);
-            likeRecíproco.get().setMatched(true);
+            likeRecíproco.get(0).setMatched(true);
             matchRepository.save(match);
-            matchRepository.save(likeRecíproco.get());
+            matchRepository.save(likeRecíproco.get(0));
             return "¡Es un match!";
         }
 
@@ -84,6 +76,10 @@ public class MatchService {
         UsuarioEntity origen = getUsuarioActual();
         UsuarioEntity destino = usuarioRepository.findById(usuarioDestinoId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (matchRepository.existsByUsuarioOrigenAndUsuarioDestino(origen, destino)) {
+            return "Ya evaluaste a este usuario anteriormente.";
+        }
 
         MatchEntity match = MatchEntity.builder()
                 .usuarioOrigen(origen)
