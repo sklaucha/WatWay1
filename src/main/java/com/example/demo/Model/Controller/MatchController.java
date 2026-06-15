@@ -15,9 +15,13 @@ public class MatchController {
 
     private final MatchService matchService;
 
-    @GetMapping("/candidatos")
-    public ResponseEntity<List<UsuarioMatchDTO>> getCandidatos() {
-        return ResponseEntity.ok(matchService.getCandidatos());
+    @GetMapping("/candidato")
+    public ResponseEntity<?> getCandidato() {
+        UsuarioMatchDTO candidato = matchService.getCandidato();
+        if (candidato == null) {
+            return ResponseEntity.ok("No hay más candidatos disponibles.");
+        }
+        return ResponseEntity.ok(candidato);
     }
 
     @PostMapping("/like/{usuarioId}")

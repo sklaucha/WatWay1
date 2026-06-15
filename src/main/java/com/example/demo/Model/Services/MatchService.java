@@ -112,6 +112,22 @@ public class MatchService {
                 .map(this::toMatchDTO)
                 .collect(Collectors.toList());
     }
+    public UsuarioMatchDTO getCandidato() {
+        UsuarioEntity actual = getUsuarioActual();
+
+        List<Long> yaEvaluados = matchRepository.findUsuariosEvaluadosByOrigen(actual);
+        yaEvaluados.add(actual.getId());
+
+        List<UsuarioEntity> candidatos = usuarioRepository
+                .findByCiudadDestinoIgnoreCaseAndIdNotIn(actual.getCiudadDestino(), yaEvaluados);
+
+        if (candidatos.isEmpty()) {
+            return null;
+        }
+
+        int indice = (int) (Math.random() * candidatos.size());
+        return toMatchDTO(candidatos.get(indice));
+    }
 
     private UsuarioMatchDTO toMatchDTO(UsuarioEntity u) {
         return UsuarioMatchDTO.builder()
