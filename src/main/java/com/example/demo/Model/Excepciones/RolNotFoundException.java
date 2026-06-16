@@ -1,4 +1,4 @@
-package com.example.demo.Excepciones;
+package com.example.demo.Model.Excepciones;
 
 public class RolNotFoundException extends RuntimeException {
     public RolNotFoundException(String message) {

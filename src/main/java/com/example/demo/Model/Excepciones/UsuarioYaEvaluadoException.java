@@ -1,4 +1,4 @@
-package com.example.demo.Excepciones;
+package com.example.demo.Model.Excepciones;
 
 public class UsuarioYaEvaluadoException extends RuntimeException {
     public UsuarioYaEvaluadoException(String message) {
