@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a1a6a60-79d0-4b6e-8488-60f1fa4b642e" name="Changes" comment="admin blacklisttoken y permisos falta arreglar">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Controller/MatchController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Controller/MatchController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Services/MatchService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Services/MatchService.java" afterDir="false" />
-    </list>
+    <list default="true" id="8a1a6a60-79d0-4b6e-8488-60f1fa4b642e" name="Changes" comment="admin blacklisttoken y permisos falta arreglar" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -62,7 +59,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.WatwayApplication.executor": "Run",
-    "git-widget-placeholder": "#2 on baja-logica",
+    "git-widget-placeholder": "baja-logica",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
