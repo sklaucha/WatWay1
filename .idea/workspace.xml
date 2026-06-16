@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a1a6a60-79d0-4b6e-8488-60f1fa4b642e" name="Changes" comment="admin blacklisttoken y permisos falta arreglar" />
+    <list default="true" id="8a1a6a60-79d0-4b6e-8488-60f1fa4b642e" name="Changes" comment="admin blacklisttoken y permisos falta arreglar">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,7 +61,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Spring Boot.WatwayApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;baja-logica&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;excepciones&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -111,6 +113,7 @@
       <workItem from="1781305404794" duration="482000" />
       <workItem from="1781561584024" duration="1643000" />
       <workItem from="1781614854900" duration="310000" />
+      <workItem from="1781616398103" duration="1567000" />
     </task>
     <task id="LOCAL-00001" summary="iniciar session echo">
       <option name="closed" value="true" />
