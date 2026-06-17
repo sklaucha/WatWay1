@@ -60,6 +60,10 @@ public class MatchService {
 
     public String like(Long usuarioDestinoId) {
         UsuarioEntity origen = getUsuarioActual();
+
+        if (origen.getId().equals(usuarioDestinoId))
+            throw new RuntimeException("No podés darte like a vos mismo.");
+
         UsuarioEntity destino = usuarioRepository.findById(usuarioDestinoId)
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
         if (matchRepository.existsByUsuarioOrigenAndUsuarioDestino(origen, destino))
@@ -80,6 +84,10 @@ public class MatchService {
 
     public String dislike(Long usuarioDestinoId) {
         UsuarioEntity origen = getUsuarioActual();
+
+        if (origen.getId().equals(usuarioDestinoId))
+            throw new RuntimeException("No podés darte dislike a vos mismo.");
+
         UsuarioEntity destino = usuarioRepository.findById(usuarioDestinoId)
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
         if (matchRepository.existsByUsuarioOrigenAndUsuarioDestino(origen, destino))
