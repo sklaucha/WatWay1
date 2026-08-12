@@ -1,4 +1,6 @@
 package com.example.demo.Model.Entities;
+import com.example.demo.Model.Enums.ExpenseGroup;
+import jakarta.persistence.*;
 import lombok.*;
 @Getter
 @Setter
@@ -6,9 +8,25 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
-
+@Entity
+@Table(name  = "Gastos")
 public class ExpensesEntity {
-    private  String gasto_comida;
-    private  String gasto_transporte;
-    private  String gasto_casa;
+    @Id
+    private Long id; // mismo id que te da Splitwise
+
+    @Column(name = "descripcion")
+    private String description;
+
+    @Column(name = "costo")
+    private String cost;
+
+    @Column(name = "fecha")
+    private String date;
+
+    @Column(name = "categoria")
+    private String category; // categoría original de Splitwise
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "grupo")
+    private ExpenseGroup expenseGroup; // tu grupo propio
 }
