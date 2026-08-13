@@ -4,11 +4,11 @@ import lombok.*;
 
 import java.util.List;
 
-@Getter
+@Data
 @Setter
+@Getter
 @AllArgsConstructor
 @Builder
-@Data
 public class ChecklistResumenDTO {
     private Long checklistId;
     private double progreso;

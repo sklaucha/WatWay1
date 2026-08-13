@@ -1,8 +1,5 @@
 package com.example.demo.Model.Entities;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
@@ -13,7 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @ToString
-
+@Entity
 public class JobOfferInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

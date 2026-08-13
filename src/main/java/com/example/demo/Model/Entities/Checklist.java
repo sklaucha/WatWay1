@@ -2,16 +2,17 @@ package com.example.demo.Model.Entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
-@Entity
-@Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@ToString
+@Entity
 @Table(name = "checklist")
     public class Checklist {
 

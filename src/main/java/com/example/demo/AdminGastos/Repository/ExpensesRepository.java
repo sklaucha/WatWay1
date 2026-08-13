@@ -1,6 +1,6 @@
-package com.example.demo.Splitwise.Repository;
+package com.example.demo.AdminGastos.Repository;
 
-import com.example.demo.Model.Entities.ExpensesEntity;
+import com.example.demo.AdminGastos.Entitys.ExpensesEntity;
 import com.example.demo.Model.Enums.ExpenseGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 

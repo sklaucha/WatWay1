@@ -1,10 +1,10 @@
-package com.example.demo.Splitwise.Mapper;
+package com.example.demo.AdminGastos.Mapper;
 
-import com.example.demo.Model.Entities.ExpensesEntity;
-import com.example.demo.Splitwise.DTO.SplitwiseExpenseDto;
+import com.example.demo.AdminGastos.Entitys.ExpensesEntity;
+import com.example.demo.AdminGastos.DTO.GastosDTO;
 
 public class ExpenseMapper {
-    public static ExpensesEntity toEntity(SplitwiseExpenseDto dto) {
+    public static ExpensesEntity toEntity(GastosDTO dto) {
         return ExpensesEntity.builder()
                 .id(dto.getId())
                 .description(dto.getDescription())

@@ -8,6 +8,9 @@ import com.example.demo.Model.Entities.ChecklistItem;
 import com.example.demo.Model.Entities.JobOfferInfo;
 import com.example.demo.Model.Entities.UsuarioEntity;
 import com.example.demo.Model.Enums.Documento;
+import com.example.demo.Model.Excepciones.OfertaExistenteException;
+import com.example.demo.Model.Excepciones.OfferNotFoundException;
+import com.example.demo.Model.Excepciones.UsuarioNotFoundException;
 import com.example.demo.Model.Repository.ChecklistItemRepository;
 import com.example.demo.Model.Repository.ChecklistRepository;
 import com.example.demo.Model.Repository.JobOfferInfoRepository;
@@ -38,17 +41,17 @@ public class ChecklistService {
     @Transactional
     public ChecklistDTO crear(ChecklistDTO dto) {
         JobOfferInfo trabajo = jobOfferInfoRepository.findById(dto.getTrabajoId())
-                .orElseThrow(() -> new EntityNotFoundException("Oferta de trabajo no encontrada"));
+                .orElseThrow(() -> new OfferNotFoundException("Oferta de trabajo no encontrada"));
 
         UsuarioEntity usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
 
         checklistRepository.findByTrabajoId(trabajo.getId()).ifPresent(c -> {
-            throw new IllegalStateException("Ya existe un checklist para esta oferta de trabajo");
+            throw new OfertaExistenteException("Ya existe un checklist para esta oferta de trabajo");
         });
 
         checklistRepository.findByUsuarioId(usuario.getId()).ifPresent(c -> {
-            throw new IllegalStateException("El usuario ya tiene un checklist creado");
+            throw new RuntimeException("El usuario ya tiene un checklist creado");
         });
 
         Checklist checklist = Checklist.builder()
@@ -58,7 +61,6 @@ public class ChecklistService {
 
         Checklist guardado = checklistRepository.save(checklist);
 
-        // auto-genera un item por cada documento del enum, sin completar
         List<ChecklistItem> items = Arrays.stream(Documento.values())
                 .map(doc -> ChecklistItem.builder()
                         .documento(doc)
@@ -100,7 +102,7 @@ public class ChecklistService {
         ChecklistItem item = checklistItemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Item no encontrado"));
         item.setCompletado(completado);
-        return toItemDTO(item); // dirty checking: Hibernate guarda el cambio solo, dentro de la transacción
+        return toItemDTO(item);
     }
 
     private Checklist buscarOLanzar(Long id) {

@@ -1,15 +1,13 @@
 package com.example.demo.Model.DTO;
 
 import com.example.demo.Model.Enums.Sexo;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
-@Builder
+@Setter
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
+@Builder
 public class UsuarioMatchDTO {
     private Long id;
     private String nombre;

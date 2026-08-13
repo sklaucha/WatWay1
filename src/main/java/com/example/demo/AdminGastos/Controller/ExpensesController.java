@@ -1,7 +1,7 @@
-package com.example.demo.Splitwise.Controller;
+package com.example.demo.AdminGastos.Controller;
 
-import com.example.demo.Model.Entities.ExpensesEntity;
-import com.example.demo.Splitwise.Service.SplitwiseService;
+import com.example.demo.AdminGastos.Entitys.ExpensesEntity;
+import com.example.demo.AdminGastos.Service.ExpensesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,9 +13,10 @@ import java.util.List;
 @RequestMapping("/api/expenses")
 public class ExpensesController {
     @Autowired
-    private SplitwiseService splitwiseService;
+    private ExpensesService expensesService;
+
     @PostMapping("/sync")
     public List<ExpensesEntity> sync() {
-        return splitwiseService.gastosGuardados(); }
-
+        return expensesService.gastosGuardados();
+    }
 }

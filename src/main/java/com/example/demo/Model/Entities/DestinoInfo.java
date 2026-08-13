@@ -1,6 +1,9 @@
 package com.example.demo.Model.Entities;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -10,8 +13,9 @@ import lombok.*;
 @Entity
 @Table(name = "destino")
 public class DestinoInfo {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
     @Column(name = "ciudad")
     private  String ciudad;
     @Column(name = "estado")

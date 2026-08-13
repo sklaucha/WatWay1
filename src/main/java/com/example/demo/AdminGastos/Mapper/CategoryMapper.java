@@ -1,5 +1,7 @@
-package com.example.demo.Splitwise.Mapper;
+package com.example.demo.AdminGastos.Mapper;
 
+import com.example.demo.AdminGastos.DTO.GastosDTO;
+import com.example.demo.AdminGastos.Entitys.ExpensesEntity;
 import com.example.demo.Model.Enums.ExpenseGroup;
 
 import java.util.Map;

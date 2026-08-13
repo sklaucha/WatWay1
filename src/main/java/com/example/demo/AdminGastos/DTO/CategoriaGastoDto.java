@@ -1,4 +1,4 @@
-package com.example.demo.Splitwise.DTO;
+package com.example.demo.AdminGastos.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-public class SplitwiseCategoryDto {
+public class CategoriaGastoDto {
     private Long id;
     private String name;
 }

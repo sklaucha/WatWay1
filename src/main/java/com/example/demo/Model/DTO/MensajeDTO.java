@@ -1,15 +1,14 @@
 package com.example.demo.Model.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Setter
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
+@Builder
 public class MensajeDTO {
     private Long id;
     private Long emisorId;
