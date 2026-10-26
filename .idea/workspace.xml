@@ -4,68 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a1a6a60-79d0-4b6e-8488-60f1fa4b642e" name="Changes" comment="se agrego funcionalidad en la checklist y se terminaron de corregir cosas de splitewise">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Controller/JobOfferInfoController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/JobOfferInfoDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Excepciones/OfertaExistenteException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Excepciones/OfferNotFoundException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Services/JobOfferInfoService.java" afterDir="false" />
+    <list default="true" id="8a1a6a60-79d0-4b6e-8488-60f1fa4b642e" name="Changes" comment="admin blacklisttoken y permisos falta arreglar">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Controller/ChecklistController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Controller/ChecklistController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/ChecklistResumenDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/ChecklistResumenDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/EnviarMensajeDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/EnviarMensajeDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/LoginRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/LoginRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/MensajeDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/MensajeDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/RegisterRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/RegisterRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/UsuarioMatchDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/UsuarioMatchDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/UsuarioResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/DTO/UsuarioResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/AgenciaEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/Checklist.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/Checklist.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/DestinoInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/DestinoInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/ExpensesEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Splitwise/Entitys/ExpensesEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/HousingEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/HousingEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/IngresosEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/IngresosEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/JobOfferInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Entities/JobOfferInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Services/ChecklistService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Model/Services/ChecklistService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Seguridad/Controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Seguridad/Controllers/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Splitwise/Controller/ExpensesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Splitwise/Controller/ExpensesController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Splitwise/Mapper/ExpenseMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Splitwise/Mapper/ExpenseMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Splitwise/Repository/ExpensesRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Splitwise/Repository/ExpensesRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Splitwise/Service/SplitwiseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Splitwise/Service/SplitwiseService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/EnviarMensajeDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/EnviarMensajeDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/LoginRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/LoginRequestDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/MensajeDTO$MensajeDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/MensajeDTO$MensajeDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/MensajeDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/MensajeDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/RegisterRequestDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/RegisterRequestDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/UsuarioMatchDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/UsuarioMatchDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/UsuarioResponseDTO$UsuarioResponseDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/UsuarioResponseDTO$UsuarioResponseDTOBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/UsuarioResponseDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/DTO/UsuarioResponseDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/AgenciaEntity.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/Comentt.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/DestinoInfo$DestinoInfoBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/DestinoInfo$DestinoInfoBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/DestinoInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/DestinoInfo.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/ExpensesEntity$ExpensesEntityBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/ExpensesEntity.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/HousingEntity$HousingEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/HousingEntity$HousingEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/HousingEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/HousingEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/IngresosEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/IngresosEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/JobOfferInfo$JobOfferInfoBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/JobOfferInfo$JobOfferInfoBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/JobOfferInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/JobOfferInfo.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/JobsInfo$JobsInfoBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/JobsInfo.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/PaxEntity$PaxEntityBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/PaxEntity.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/UsuarioEntity$UsuarioEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/UsuarioEntity$UsuarioEntityBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/UsuarioEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Entities/UsuarioEntity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Services/MatchService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Services/MatchService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Services/MensajeService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Services/MensajeService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Services/UsuarioServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/Services/UsuarioServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Seguridad/Config/ApplicationConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Seguridad/Config/ApplicationConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Seguridad/Config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Seguridad/Config/SecurityConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Seguridad/Services/AuthServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Seguridad/Services/AuthServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/Seguridad/Config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/Seguridad/Config/SecurityConfig.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,8 +16,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Enum" />
         <option value="Interface" />
+        <option value="Enum" />
         <option value="Exception" />
         <option value="Class" />
       </list>
@@ -85,7 +26,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="mensajes" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -96,12 +37,12 @@
     &quot;assignee&quot;: &quot;Ramacamacho&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/sklaucha/WatWay1.git",
-    "accountId": "c0348a42-432f-42de-96ee-7649dc4e81d9"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/sklaucha/WatWay1.git&quot;,
+    &quot;accountId&quot;: &quot;7a5709ef-7671-4d58-8916-e188a4c0cf4b&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
 }</component>
@@ -110,35 +51,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "Application.WatwayApplication.executor": "Run",
-    "Maven.watway [clean].executor": "Run",
-    "Maven.watway [install].executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.WatwayApplication.executor": "Run",
-    "git-widget-placeholder": "Actualizaciones2.0",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.customizations",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.watway [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.watway [install].executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.WatwayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;mensajes&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.sync&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />
@@ -152,6 +92,14 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.142" />
+        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.142" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -171,6 +119,9 @@
       <workItem from="1781616398103" duration="1567000" />
       <workItem from="1781649160641" duration="7191000" />
       <workItem from="1781723143607" duration="838000" />
+      <workItem from="1791672430920" duration="77000" />
+      <workItem from="1792414620910" duration="4913000" />
+      <workItem from="1793019559537" duration="4257000" />
     </task>
     <task id="LOCAL-00001" summary="iniciar session echo">
       <option name="closed" value="true" />
@@ -196,59 +147,16 @@
       <option name="project" value="LOCAL" />
       <updated>1780538201274</updated>
     </task>
-    <task id="LOCAL-00004" summary="se agrego funcionalidad en la checklist y se terminaron de corregir cosas de splitewise">
-      <option name="closed" value="true" />
-      <created>1786562113369</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1786562113369</updated>
-    </task>
-    <option name="localTasksCounter" value="5" />
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="UnknownFeatures">
-    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
-    <option featureType="dependencySupport" implementationName="java:org.springframework.security:spring-security-core" />
-    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-websocket" />
-    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
-    <option featureType="dependencySupport" implementationName="java:jakarta.persistence:jakarta.persistence-api" />
-    <option featureType="dependencySupport" implementationName="java:org.springframework.data:spring-data-commons" />
-    <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
-    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-messaging" />
-    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
-    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
-    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="b805b347-e1bc-4567-b9e0-0a8ccc696352" value="TOOL_WINDOW" />
-      </map>
-    </option>
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-        <entry key="b805b347-e1bc-4567-b9e0-0a8ccc696352">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="iniciar session echo" />
     <MESSAGE value="seguridad y match funcional" />
     <MESSAGE value="admin blacklisttoken y permisos falta arreglar" />
-    <MESSAGE value="se agrego funcionalidad en la checklist y se terminaron de corregir cosas de splitewise" />
-    <option name="LAST_COMMIT_MESSAGE" value="se agrego funcionalidad en la checklist y se terminaron de corregir cosas de splitewise" />
+    <option name="LAST_COMMIT_MESSAGE" value="admin blacklisttoken y permisos falta arreglar" />
   </component>
 </project>
