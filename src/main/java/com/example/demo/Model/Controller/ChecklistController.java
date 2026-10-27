@@ -1,10 +1,8 @@
 package com.example.demo.Model.Controller;
 
-import com.example.demo.Model.DTO.ChecklistDTO;
 import com.example.demo.Model.DTO.ChecklistItemDTO;
 import com.example.demo.Model.DTO.ChecklistResumenDTO;
 import com.example.demo.Model.Services.ChecklistService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 public class ChecklistController {
     private final ChecklistService checklistService;
 
-    @PostMapping
-    public ResponseEntity<ChecklistDTO> crear(@Valid @RequestBody ChecklistDTO dto) {
-        return ResponseEntity.ok(checklistService.crear(dto));
+    @GetMapping("/mi-resumen")
+    public ResponseEntity<ChecklistResumenDTO> obtenerMiResumen() {
+        return ResponseEntity.ok(checklistService.obtenerMiResumen());
     }
 
     @GetMapping("/{checklistId}/resumen")

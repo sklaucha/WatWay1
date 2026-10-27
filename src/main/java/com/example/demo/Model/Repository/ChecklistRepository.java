@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ChecklistRepository extends JpaRepository <Checklist, Long> {
+public interface ChecklistRepository extends JpaRepository<Checklist, Long> {
     Optional<Checklist> findByUsuarioId(Long usuarioId);
-    Optional<Checklist> findByTrabajoId(Long trabajoId);
 }
