@@ -25,7 +25,7 @@ public class MensajeEntity {
     @JoinColumn(name = "receptor_id", nullable = false)
     private UsuarioEntity receptor;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String contenido;
 
     @Column(nullable = false)

@@ -5,8 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
-@Setter
-@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MensajeDTO {
