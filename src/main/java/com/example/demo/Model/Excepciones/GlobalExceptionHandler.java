@@ -4,6 +4,7 @@ import com.example.demo.Model.Excepciones.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -65,8 +66,17 @@ public class GlobalExceptionHandler {
         return buildResponse("Parámetro inválido: " + ex.getName(), HttpStatus.BAD_REQUEST);
     }
 
+    // Login fallido (contraseña incorrecta, usuario inexistente o desactivado):
+    // es un error del cliente, así que va 401 y no 500.
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
+        return buildResponse("Email o contraseña incorrectos", HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
+        // Imprime el error completo en la consola para poder ver la causa real
+        ex.printStackTrace();
         return buildResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

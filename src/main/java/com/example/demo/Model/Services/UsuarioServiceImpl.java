@@ -60,9 +60,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void eliminarUsuario(Long id) {
-        if (!usuarioRepository.existsById(id))
-            throw new UsuarioNotFoundException("Usuario no encontrado");
-        usuarioRepository.deleteById(id);
+        // Borrado lógico: no se borra la fila porque credentials, matches,
+        // mensajes y checklist tienen claves foráneas hacia el usuario.
+        // Con activo = false, CredentialsEntity.isEnabled() devuelve false
+        // y el usuario ya no puede loguearse ni usar su token.
+        UsuarioEntity usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
+        usuario.setActivo(false);
+        usuarioRepository.save(usuario);
     }
 
     @Override

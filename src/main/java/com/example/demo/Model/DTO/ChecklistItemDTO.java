@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Data
 @Getter
 @Setter
+@NoArgsConstructor // Jackson lo necesita para armar el objeto desde el JSON
 @AllArgsConstructor
 @Builder
 public class ChecklistItemDTO {
