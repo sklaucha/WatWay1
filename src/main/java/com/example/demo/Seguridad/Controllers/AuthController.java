@@ -1,6 +1,7 @@
     package com.example.demo.Seguridad.Controllers;
 
     import com.example.demo.Seguridad.DTO.AuthResponse;
+    import com.example.demo.Seguridad.DTO.BajaCuentaRequest;
     import com.example.demo.Seguridad.DTO.RefreshTokenRequest;
     import com.example.demo.Seguridad.Services.AuthService;
     import com.example.demo.Seguridad.Services.JwtService;
@@ -61,14 +62,17 @@
 
         @DeleteMapping("/baja")
         public ResponseEntity<String> eliminarCuenta(@RequestHeader("Authorization") String authHeader,
-                                                     @RequestBody RefreshTokenRequest request) {
+                                                     @RequestBody BajaCuentaRequest request) {
+            // Primero se verifica la contraseña y se da de baja.
+            // Recién después se invalidan los tokens: si la contraseña está mal, la sesión sigue.
+            usuarioService.eliminarCuenta(request.getPassword());
+
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 tokenBlacklistService.blacklist(authHeader.substring(7));
             }
             if (request.getRefreshToken() != null) {
                 tokenBlacklistService.blacklist(request.getRefreshToken());
             }
-            usuarioService.eliminarCuenta();
             return ResponseEntity.ok("Cuenta eliminada correctamente.");
         }
     }

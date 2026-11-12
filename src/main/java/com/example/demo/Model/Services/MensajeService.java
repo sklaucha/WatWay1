@@ -1,5 +1,6 @@
 package com.example.demo.Model.Services;
 
+import com.example.demo.Model.DTO.EditarMensajeDTO;
 import com.example.demo.Model.DTO.EnviarMensajeDTO;
 import com.example.demo.Model.DTO.MensajeDTO;
 import com.example.demo.Model.Entities.MensajeEntity;
@@ -9,6 +10,7 @@ import com.example.demo.Model.Repository.MatchRepository;
 import com.example.demo.Model.Repository.MensajeRepository;
 import com.example.demo.Model.Repository.UsuarioRepository;
 import com.example.demo.Seguridad.Entities.CredentialsEntity;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,6 +78,26 @@ public class MensajeService {
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    // Solo quien mandó el mensaje puede editarlo o borrarlo.
+    // Si es de otro, respondemos "no encontrado" para no dar pistas.
+    private MensajeEntity buscarMensajePropio(Long mensajeId) {
+        MensajeEntity mensaje = mensajeRepository.findById(mensajeId)
+                .orElseThrow(() -> new EntityNotFoundException("Mensaje no encontrado"));
+        if (!mensaje.getEmisor().getId().equals(getUsuarioActual().getId()))
+            throw new EntityNotFoundException("Mensaje no encontrado");
+        return mensaje;
+    }
+
+    public MensajeDTO editarMensaje(Long mensajeId, EditarMensajeDTO request) {
+        MensajeEntity mensaje = buscarMensajePropio(mensajeId);
+        mensaje.setContenido(request.getContenido().trim());
+        return toDTO(mensajeRepository.save(mensaje));
+    }
+
+    public void eliminarMensaje(Long mensajeId) {
+        mensajeRepository.delete(buscarMensajePropio(mensajeId));
     }
 
     private MensajeDTO toDTO(MensajeEntity m) {

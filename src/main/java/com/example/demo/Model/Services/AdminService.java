@@ -2,6 +2,7 @@ package com.example.demo.Model.Services;
 
 import com.example.demo.Model.DTO.AdminUsuarioDTO;
 import com.example.demo.Model.Entities.UsuarioEntity;
+import com.example.demo.Model.Excepciones.UsuarioNotFoundException;
 import com.example.demo.Model.Repository.UsuarioRepository;
 import com.example.demo.Seguridad.Entities.CredentialsEntity;
 import com.example.demo.Seguridad.Entities.RoleEntity;
@@ -35,6 +36,14 @@ public class AdminService {
         return usuarioRepository.findAll().stream()
                 .map(usuario -> toAdminDTO(usuario, credencialesPorUsuario.get(usuario.getId())))
                 .toList();
+    }
+
+    // Deshace el borrado lógico: el usuario puede volver a loguearse
+    public void reactivarUsuario(Long usuarioId) {
+        UsuarioEntity usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
+        usuario.setActivo(true);
+        usuarioRepository.save(usuario);
     }
 
     public void asignarRol(Long credentialId, String rolNombre) {

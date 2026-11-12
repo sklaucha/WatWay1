@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -54,6 +55,28 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OfferNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleOfferNotFound(OfferNotFoundException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    // Falla un @Valid (ej: nombre vacío) -> 400 con el primer mensaje de error.
+    // Sin esto Spring redirige a /error, que está protegido, y responde 401.
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidacion(MethodArgumentNotValidException ex) {
+        String mensaje = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(e -> e.getDefaultMessage())
+                .orElse("Datos inválidos");
+        return buildResponse(mensaje, HttpStatus.BAD_REQUEST);
+    }
+
+    // Datos inválidos enviados por el cliente (ej: falta el documento) -> 400
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DocumentoYaAgregadoException.class)
+    public ResponseEntity<Map<String, Object>> handleDocumentoYaAgregado(DocumentoYaAgregadoException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(OfertaExistenteException.class)

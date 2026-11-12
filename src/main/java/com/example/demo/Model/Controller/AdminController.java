@@ -39,6 +39,13 @@ public class AdminController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/usuarios/{id}/activar")
+    public ResponseEntity<String> reactivarUsuario(@PathVariable Long id) {
+        adminService.reactivarUsuario(id);
+        return ResponseEntity.ok("Usuario reactivado correctamente.");
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/usuarios/{credentialId}/rol/{rol}")
     public ResponseEntity<String> asignarRol(@PathVariable Long credentialId,
                                              @PathVariable String rol) {

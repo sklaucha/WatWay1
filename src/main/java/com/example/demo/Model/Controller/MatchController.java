@@ -38,4 +38,9 @@ public class MatchController {
     public ResponseEntity<List<UsuarioMatchDTO>> getMatches() {
         return ResponseEntity.ok(matchService.getMatches());
     }
+
+    @DeleteMapping("/{usuarioId}")
+    public ResponseEntity<String> eliminarMatch(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(matchService.eliminarMatch(usuarioId));
+    }
 }
