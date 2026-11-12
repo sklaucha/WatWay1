@@ -133,6 +133,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>21</release>
+                    <!-- Guarda los nombres de los parametros: Spring los necesita para @PathVariable y Jackson -->
+                    <parameters>true</parameters>
                 </configuration>
             </plugin>
 

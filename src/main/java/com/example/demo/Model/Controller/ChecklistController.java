@@ -29,4 +29,27 @@ public class ChecklistController {
             @RequestParam boolean completado) {
         return ResponseEntity.ok(checklistService.marcarCompletado(itemId, completado));
     }
+
+    // ---------- CRUD de items ----------
+    // Crear  -> POST   /checklist/items
+    // Leer   -> GET    /checklist/mi-resumen
+    // Editar -> PUT    /checklist/items/{itemId}
+    // Borrar -> DELETE /checklist/items/{itemId}
+
+    @PostMapping("/items")
+    public ResponseEntity<ChecklistItemDTO> agregarItem(@RequestBody ChecklistItemDTO request) {
+        return ResponseEntity.status(201).body(checklistService.agregarItem(request));
+    }
+
+    @PutMapping("/items/{itemId}")
+    public ResponseEntity<ChecklistItemDTO> actualizarItem(@PathVariable Long itemId,
+                                                           @RequestBody ChecklistItemDTO request) {
+        return ResponseEntity.ok(checklistService.actualizarItem(itemId, request));
+    }
+
+    @DeleteMapping("/items/{itemId}")
+    public ResponseEntity<Void> eliminarItem(@PathVariable Long itemId) {
+        checklistService.eliminarItem(itemId);
+        return ResponseEntity.noContent().build();
+    }
 }

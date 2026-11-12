@@ -33,7 +33,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         System.out.println("PATH: " + path);
 
-        if (path.startsWith("/auth") ||
+        // Solo se saltean las rutas públicas de /auth.
+        // /auth/logout y /auth/baja necesitan el token, así que pasan por el filtro.
+        if (path.equals("/auth/login") ||
+                path.equals("/auth/register") ||
+                path.equals("/auth/refresh") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger-resources") ||

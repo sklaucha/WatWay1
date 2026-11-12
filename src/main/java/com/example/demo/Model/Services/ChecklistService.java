@@ -6,6 +6,7 @@ import com.example.demo.Model.Entities.Checklist;
 import com.example.demo.Model.Entities.ChecklistItem;
 import com.example.demo.Model.Entities.UsuarioEntity;
 import com.example.demo.Model.Enums.Documento;
+import com.example.demo.Model.Excepciones.DocumentoYaAgregadoException;
 import com.example.demo.Model.Excepciones.UsuarioNotFoundException;
 import com.example.demo.Model.Repository.ChecklistItemRepository;
 import com.example.demo.Model.Repository.ChecklistRepository;
@@ -69,6 +70,53 @@ public class ChecklistService {
         verificarPropietario(item.getChecklist());
         item.setCompletado(completado);
         return toItemDTO(item);
+    }
+
+    // ---------- Crear / Editar / Borrar items ----------
+
+    // Agrega un documento al checklist del usuario logueado.
+    // Cada documento puede estar una sola vez.
+    @Transactional
+    public ChecklistItemDTO agregarItem(ChecklistItemDTO request) {
+        if (request.getDocumento() == null)
+            throw new IllegalArgumentException("El documento es obligatorio");
+
+        UsuarioEntity actual = getUsuarioActual();
+        Checklist checklist = checklistRepository.findByUsuarioId(actual.getId())
+                .orElseGet(() -> crearParaUsuario(actual));
+
+        boolean yaExiste = checklistItemRepository.findByChecklistId(checklist.getId()).stream()
+                .anyMatch(i -> i.getDocumento() == request.getDocumento());
+        if (yaExiste)
+            throw new DocumentoYaAgregadoException("Ese documento ya está en tu checklist");
+
+        ChecklistItem item = checklistItemRepository.save(ChecklistItem.builder()
+                .documento(request.getDocumento())
+                .completado(request.isCompletado())
+                .fechaLimite(request.getFechaLimite())
+                .checklist(checklist)
+                .build());
+        return toItemDTO(item);
+    }
+
+    // Edita la fecha límite y el estado de un item propio.
+    // El documento no se cambia: para eso se borra y se agrega otro.
+    @Transactional
+    public ChecklistItemDTO actualizarItem(Long itemId, ChecklistItemDTO request) {
+        ChecklistItem item = checklistItemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Item no encontrado"));
+        verificarPropietario(item.getChecklist());
+        item.setFechaLimite(request.getFechaLimite());
+        item.setCompletado(request.isCompletado());
+        return toItemDTO(checklistItemRepository.save(item));
+    }
+
+    @Transactional
+    public void eliminarItem(Long itemId) {
+        ChecklistItem item = checklistItemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Item no encontrado"));
+        verificarPropietario(item.getChecklist());
+        checklistItemRepository.delete(item);
     }
 
     // ---------- Helpers ----------

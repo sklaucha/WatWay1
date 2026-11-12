@@ -1,5 +1,7 @@
 package com.example.demo.Model.Services;
 
+import com.example.demo.Model.DTO.ActualizarUsuarioDTO;
+import com.example.demo.Model.DTO.CambiarPasswordDTO;
 import com.example.demo.Model.DTO.RegisterRequestDTO;
 import com.example.demo.Model.DTO.UsuarioResponseDTO;
 import com.example.demo.Model.Entities.UsuarioEntity;
@@ -71,12 +73,77 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public void eliminarCuenta() {
+    // Baja de la cuenta, confirmada con la contraseña.
+    // Es un borrado lógico (activo = false), igual que la baja que hace el admin:
+    // la fila no se puede borrar porque checklist, matches y mensajes la referencian.
+    // Con activo = false el login queda bloqueado (CredentialsEntity.isEnabled).
+    public void eliminarCuenta(String password) {
+        CredentialsEntity credentials = getCredencialesActuales();
+        verificarPassword(password, credentials, "La contraseña es incorrecta");
+
+        UsuarioEntity usuario = getUsuarioActual();
+        usuario.setActivo(false);
+        usuarioRepository.save(usuario);
+    }
+
+    // ---------- Perfil del usuario logueado ----------
+
+    @Override
+    public UsuarioResponseDTO obtenerMiPerfil() {
+        return usuarioMapper.toResponseDTO(getUsuarioActual());
+    }
+
+    @Override
+    public UsuarioResponseDTO actualizarMiPerfil(ActualizarUsuarioDTO request) {
+        UsuarioEntity usuario = getUsuarioActual();
+        usuario.setNombre(request.getNombre().trim());
+        usuario.setApellido(request.getApellido().trim());
+        usuario.setPosicionLaboral(request.getPosicionLaboral());
+        usuario.setCiudadDestino(request.getCiudadDestino());
+        usuario.setSexo(request.getSexo());
+        usuario.setDescripcion(request.getDescripcion());
+        return usuarioMapper.toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    // Cambia la contraseña pidiendo la actual
+    @Override
+    public void cambiarPassword(CambiarPasswordDTO request) {
+        CredentialsEntity credentials = getCredencialesActuales();
+        verificarPassword(request.getActual(), credentials, "La contraseña actual es incorrecta");
+
+        if (passwordEncoder.matches(request.getNueva(), credentials.getPassword()))
+            throw new IllegalArgumentException("La nueva contraseña tiene que ser distinta a la actual");
+
+        String hash = passwordEncoder.encode(request.getNueva());
+        credentials.setPassword(hash);
+        credentialsRepository.save(credentials);
+
+        // La tabla usuario también guarda la contraseña: la mantenemos igual
+        UsuarioEntity usuario = getUsuarioActual();
+        usuario.setPassword(hash);
+        usuarioRepository.save(usuario);
+    }
+
+    // Compara la contraseña escrita con el hash BCrypt guardado.
+    // Si no coincide -> 400 con el mensaje (no 401, porque la sesión sigue siendo válida).
+    private void verificarPassword(String password, CredentialsEntity credentials, String mensajeError) {
+        if (password == null || !passwordEncoder.matches(password, credentials.getPassword()))
+            throw new IllegalArgumentException(mensajeError);
+    }
+
+    // Se vuelve a buscar en la base para tener la versión actual (con la contraseña vigente)
+    private CredentialsEntity getCredencialesActuales() {
+        CredentialsEntity logueado = (CredentialsEntity)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return credentialsRepository.findByEmail(logueado.getEmail())
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
+    }
+
+    // El usuario sale del token: nadie puede leer ni editar el perfil de otro
+    private UsuarioEntity getUsuarioActual() {
         CredentialsEntity credentials = (CredentialsEntity)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UsuarioEntity usuario = usuarioRepository.findByEmail(credentials.getEmail())
+        return usuarioRepository.findByEmail(credentials.getEmail())
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
-        credentialsRepository.delete(credentials);
-        usuarioRepository.delete(usuario);
     }
 }

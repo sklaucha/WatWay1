@@ -10,9 +10,11 @@ import com.example.demo.Model.Mappers.UsuarioMapper;
 import com.example.demo.Model.Repository.MatchRepository;
 import com.example.demo.Model.Repository.UsuarioRepository;
 import com.example.demo.Seguridad.Entities.CredentialsEntity;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -107,5 +109,34 @@ public class MatchService {
                 .map(MatchEntity::getUsuarioOrigen).collect(Collectors.toList());
         return Stream.concat(matchesComoOrigen.stream(), matchesComoDestino.stream())
                 .distinct().map(usuarioMapper::toMatchDTO).collect(Collectors.toList());
+    }
+
+    // Deshacer un match: no se borran las filas, se marcan como "no match".
+    // - Mi registro pasa a dislike: así no me vuelve a aparecer como candidato.
+    // - El registro del otro queda sin match: tampoco le aparezco a él
+    //   (ya me evaluó) y el chat se bloquea porque exige matched = true.
+    // Los mensajes viejos se conservan.
+    @Transactional
+    public String eliminarMatch(Long otroUsuarioId) {
+        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity otro = usuarioRepository.findById(otroUsuarioId)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
+
+        List<MatchEntity> mios = matchRepository.findByUsuarioOrigenAndUsuarioDestino(actual, otro);
+        List<MatchEntity> suyos = matchRepository.findByUsuarioOrigenAndUsuarioDestino(otro, actual);
+
+        boolean hayMatch = Stream.concat(mios.stream(), suyos.stream()).anyMatch(MatchEntity::isMatched);
+        if (!hayMatch)
+            throw new EntityNotFoundException("No tenés un match con este usuario.");
+
+        mios.forEach(m -> {
+            m.setMatched(false);
+            m.setLiked(false);
+        });
+        suyos.forEach(m -> m.setMatched(false));
+
+        matchRepository.saveAll(mios);
+        matchRepository.saveAll(suyos);
+        return "Match eliminado";
     }
 }

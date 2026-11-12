@@ -1,5 +1,7 @@
 package com.example.demo.Model.Services;
 
+import com.example.demo.Model.DTO.ActualizarUsuarioDTO;
+import com.example.demo.Model.DTO.CambiarPasswordDTO;
 import com.example.demo.Model.DTO.RegisterRequestDTO;
 import com.example.demo.Model.DTO.UsuarioResponseDTO;
 
@@ -15,5 +17,11 @@ public interface UsuarioService {
 
     void eliminarUsuario(Long id);
 
-    void eliminarCuenta();
+    void eliminarCuenta(String password);
+
+    UsuarioResponseDTO obtenerMiPerfil();
+
+    UsuarioResponseDTO actualizarMiPerfil(ActualizarUsuarioDTO request);
+
+    void cambiarPassword(CambiarPasswordDTO request);
 }
