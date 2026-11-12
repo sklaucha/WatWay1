@@ -25,4 +25,6 @@ public interface MatchRepository extends JpaRepository<MatchEntity, Long> {
 
     @Query("SELECT m.usuarioDestino.id FROM MatchEntity m WHERE m.usuarioOrigen = :usuario")
     List<Long> findUsuariosEvaluadosByOrigen(@Param("usuario") UsuarioEntity usuario);
+
+    boolean existsByUsuarioOrigenAndUsuarioDestinoAndMatched(UsuarioEntity emisor, UsuarioEntity receptor, boolean b);
 }

@@ -1,4 +1,5 @@
 package com.example.demo.Model.Entities;
+import jakarta.persistence.*;
 import lombok.*;
 @Getter
 @Setter
@@ -6,10 +7,15 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
+@Entity
 
 public class HousingEntity {
-    private DestinoInfo location;
-    private String addres;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "location")
+    private String location;
+    @Column(name = "gasto")
     private String costo;
 
 }

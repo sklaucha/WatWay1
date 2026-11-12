@@ -31,12 +31,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getServletPath();
-        if (path.startsWith("/auth") || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs")) {
+        System.out.println("PATH: " + path);
+
+        if (path.startsWith("/auth") ||
+                path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-resources") ||
+                path.startsWith("/webjars") ||
+                path.startsWith("/ws")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         final String authHeader = request.getHeader("Authorization");
+        System.out.println("AUTH HEADER: " + authHeader);
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -54,14 +63,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             final String username = jwtService.extractUsername(jwt);
+            System.out.println("USERNAME: " + username);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (jwtService.isTokenValid(jwt, userDetails)) {
+                    System.out.println("TOKEN VALIDO");
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    System.out.println("TOKEN INVALIDO");
                 }
             }
         } catch (Exception e) {

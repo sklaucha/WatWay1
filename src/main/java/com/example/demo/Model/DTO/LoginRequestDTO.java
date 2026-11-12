@@ -1,9 +1,13 @@
 package com.example.demo.Model.DTO;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
-public class LoginRequestDTO {
+@Setter
+@Getter
+@AllArgsConstructor
+@Builder
+public class    LoginRequestDTO {
 
     private String email;
     private String password;
