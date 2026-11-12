@@ -6,6 +6,7 @@ import lombok.*;
 @Data
 @Setter
 @Getter
+@NoArgsConstructor // Jackson lo necesita para armar el objeto desde el JSON
 @AllArgsConstructor
 @Builder
 public class RegisterRequestDTO {
