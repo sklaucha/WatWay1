@@ -1,3 +1,4 @@
+HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -5,15 +6,12 @@ target/
 .kotlin
 
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### Eclipse ###
+### Eclipse / STS ###
 .apt_generated
 .classpath
 .factorypath
@@ -37,3 +35,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Variables de entorno ###
+.env
+.env.*
