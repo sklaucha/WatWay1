@@ -10,6 +10,7 @@
     import com.example.demo.Model.DTO.LoginRequestDTO;
     import com.example.demo.Model.DTO.RegisterRequestDTO;
     import com.example.demo.Model.Services.UsuarioService;
+    import jakarta.validation.Valid;
     import lombok.RequiredArgsConstructor;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
@@ -30,12 +31,16 @@
         }
 
         @PostMapping("/register")
-        public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequestDTO request) {
+        public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequestDTO request) {
             return ResponseEntity.ok(authService.register(request));
         }
 
         @PostMapping("/refresh")
         public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshTokenRequest request) {
+            // Si el refresh token ya se cerró con logout/baja, no sirve más
+            if (tokenBlacklistService.isBlacklisted(request.getRefreshToken()))
+                return ResponseEntity.status(401).build();
+
             String email = jwtService.extractUsername(request.getRefreshToken());
             CredentialsEntity credentials = (CredentialsEntity) authService.loadUserByUsername(email);
 

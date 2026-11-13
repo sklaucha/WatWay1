@@ -3,6 +3,7 @@ package com.example.demo.Seguridad.Services;
 import com.example.demo.Model.DTO.LoginRequestDTO;
 import com.example.demo.Model.DTO.RegisterRequestDTO;
 import com.example.demo.Model.Entities.UsuarioEntity;
+import com.example.demo.Model.Excepciones.EmailYaRegistradoException;
 import com.example.demo.Model.Repository.UsuarioRepository;
 import com.example.demo.Seguridad.DTO.AuthResponse;
 import com.example.demo.Seguridad.Entities.CredentialsEntity;
@@ -48,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse register(RegisterRequestDTO request) {
         if (credentialsRepository.existsByEmail(request.getEmail()))
-            throw new RuntimeException("El email ya está registrado");
+            throw new EmailYaRegistradoException("El email ya está registrado"); // -> 409
 
         // Guardar datos del usuario
         UsuarioEntity usuario = UsuarioEntity.builder()
