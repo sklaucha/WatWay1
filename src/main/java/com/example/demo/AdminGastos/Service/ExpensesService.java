@@ -2,73 +2,80 @@ package com.example.demo.AdminGastos.Service;
 
 import com.example.demo.AdminGastos.DTO.MovimientoDTO;
 import com.example.demo.AdminGastos.Entitys.ExpensesEntity;
+import com.example.demo.AdminGastos.Repository.ExpensesRepository;
 import com.example.demo.Model.Entities.UsuarioEntity;
 import com.example.demo.Model.Enums.ExpenseGroup;
-import com.example.demo.AdminGastos.DTO.CategoriaGastoDto;
-import com.example.demo.AdminGastos.DTO.GastosDTO;
-import com.example.demo.AdminGastos.DTO.GastosResponse;
-import com.example.demo.AdminGastos.Mapper.ExpenseMapper;
-import com.example.demo.AdminGastos.Repository.ExpensesRepository;
-import lombok.AllArgsConstructor;
+import com.example.demo.Model.Excepciones.UsuarioNotFoundException;
+import com.example.demo.Model.Repository.UsuarioRepository;
+import com.example.demo.Seguridad.Entities.CredentialsEntity;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
-@AllArgsConstructor
+
 @Service
+@RequiredArgsConstructor
 public class ExpensesService {
-    private ExpensesRepository expensesRepository;
 
-    public List<ExpensesEntity> gastosGuardados() {
-        GastosResponse batch = getMockData();
+    private final ExpensesRepository expensesRepository;
+    private final UsuarioRepository usuarioRepository;
 
-        List<ExpensesEntity> entities = batch.getGastos().stream()
-                .map(ExpenseMapper::toEntity).toList();
-        return expensesRepository.saveAll(entities);
+    // Usuario logueado, sacado del token JWT
+    private UsuarioEntity getUsuarioActual() {
+        CredentialsEntity credentials = (CredentialsEntity)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return usuarioRepository.findByEmail(credentials.getEmail())
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
     }
 
-    private GastosResponse getMockData() {
-        CategoriaGastoDto categoriaComida = new CategoriaGastoDto(1L, "Groceries");
-        CategoriaGastoDto categoriaTransporte = new CategoriaGastoDto(2L, "Transportation");
-        CategoriaGastoDto categoriaCasa = new CategoriaGastoDto(3L, "Rent");
-
-        GastosDTO gasto1 = new GastosDTO(101L, "Supermercado semanal", "45.50", "2026-08-10", categoriaComida);
-        GastosDTO gasto2 = new GastosDTO(102L, "Uber al aeropuerto", "22.00", "2026-08-11", categoriaTransporte);
-        GastosDTO gasto3 = new GastosDTO(103L, "Alquiler mensual", "600.00", "2026-08-01", categoriaCasa);
-
-        GastosResponse batch = new GastosResponse();
-        batch.setGastos(List.of(gasto1, gasto2, gasto3));
-        return batch;
+    // Si el movimiento es de otro usuario respondemos "no encontrado" para no dar pistas
+    private ExpensesEntity buscarMovimientoPropio(Long id) {
+        ExpensesEntity movimiento = expensesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Movimiento no encontrado"));
+        if (movimiento.getUsuario() == null
+                || !movimiento.getUsuario().getId().equals(getUsuarioActual().getId()))
+            throw new EntityNotFoundException("Movimiento no encontrado");
+        return movimiento;
     }
 
-    public List<ExpensesEntity> getByGroup(ExpenseGroup tipo_gasto) {
-        return expensesRepository.findByExpenseGroup(tipo_gasto);
-    }
-    public List<MovimientoDTO> listar(UsuarioEntity usuario) {
-        return expensesRepository.findByUsuario_IdOrderByIdDesc(usuario.getId())
+    // READ
+    public List<MovimientoDTO> listar() {
+        return expensesRepository.findByUsuario_IdOrderByDateDescIdDesc(getUsuarioActual().getId())
                 .stream().map(this::toDto).toList();
     }
 
-    public MovimientoDTO crear(MovimientoDTO dto, UsuarioEntity usuario) {
-        ExpensesEntity e = ExpensesEntity.builder()
-                .description(dto.getDescription())
-                .cost(dto.getCost().toPlainString())
-                .date(dto.getDate())
-                .category(dto.getCategory())
-                .type(dto.getType())
-                .expenseGroup(grupoDe(dto.getType(), dto.getCategory()))
-                .usuario(usuario)
-                .build();
-        return toDto(expensesRepository.save(e));
+    // CREATE
+    public MovimientoDTO crear(MovimientoDTO dto) {
+        ExpensesEntity movimiento = new ExpensesEntity();
+        copiarDatos(dto, movimiento);
+        movimiento.setUsuario(getUsuarioActual());
+        return toDto(expensesRepository.save(movimiento));
     }
 
-    public boolean eliminar(Long id, UsuarioEntity usuario) {
-        return expensesRepository.findById(id)
-                .filter(e -> e.getUsuario() != null && e.getUsuario().getId().equals(usuario.getId()))
-                .map(e -> { expensesRepository.delete(e); return true; })
-                .orElse(false);
+    // UPDATE
+    public MovimientoDTO actualizar(Long id, MovimientoDTO dto) {
+        ExpensesEntity movimiento = buscarMovimientoPropio(id);
+        copiarDatos(dto, movimiento);
+        return toDto(expensesRepository.save(movimiento));
     }
 
+    // DELETE
+    public void eliminar(Long id) {
+        expensesRepository.delete(buscarMovimientoPropio(id));
+    }
+
+    private void copiarDatos(MovimientoDTO dto, ExpensesEntity movimiento) {
+        movimiento.setDescription(dto.getDescription().trim());
+        movimiento.setCost(dto.getCost());
+        movimiento.setDate(dto.getDate());
+        movimiento.setCategory(dto.getCategory());
+        movimiento.setType(dto.getType());
+        movimiento.setExpenseGroup(grupoDe(dto.getType(), dto.getCategory()));
+    }
+
+    // Los ingresos no tienen grupo; un gasto con categoría desconocida va a OTROS
     private ExpenseGroup grupoDe(String type, String category) {
         if (!"GASTO".equals(type)) return null;
         try {
@@ -82,7 +89,7 @@ public class ExpensesService {
         MovimientoDTO d = new MovimientoDTO();
         d.setId(e.getId());
         d.setDescription(e.getDescription());
-        d.setCost(new BigDecimal(e.getCost()));
+        d.setCost(e.getCost());
         d.setDate(e.getDate());
         d.setCategory(e.getCategory());
         d.setType(e.getType());
