@@ -1,4 +1,5 @@
 package com.example.demo.AdminGastos.Entitys;
+import com.example.demo.Model.Entities.UsuarioEntity;
 import com.example.demo.Model.Enums.ExpenseGroup;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,9 +10,10 @@ import lombok.*;
 @Builder
 @ToString
 @Entity
-@Table(name  = "Gastos")
+@Table(name = "Gastos")
 public class ExpensesEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "descripcion")
@@ -29,4 +31,12 @@ public class ExpensesEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "grupo")
     private ExpenseGroup expenseGroup;
+
+    @Column(name = "tipo")
+    private String type; // "GASTO" o "INGRESO"
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
+    @ToString.Exclude
+    private UsuarioEntity usuario;
 }

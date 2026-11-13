@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ExpensesRepository extends JpaRepository<ExpensesEntity,Long> {
     List<ExpensesEntity> findByExpenseGroup(ExpenseGroup expenseGroup);
+    List<ExpensesEntity> findByUsuario_IdOrderByIdDesc(Long usuarioId);
 }
