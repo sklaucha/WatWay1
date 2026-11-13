@@ -1,5 +1,6 @@
 package com.example.demo.Seguridad.Services;
 
+import com.example.demo.Model.Excepciones.TokenInvalidoException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -42,6 +43,12 @@ public class JwtService {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
+    // Solo el token de acceso lleva el claim "roles"; el refresh token no.
+    // Así un refresh token (dura 7 días) no sirve para entrar a la API.
+    public boolean isAccessToken(String token) {
+        return extractAllClaims(token).containsKey("roles");
+    }
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return username.equals(userDetails.getUsername())
@@ -62,7 +69,7 @@ public class JwtService {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            throw new RuntimeException("Token inválido o malformado", e);
+            throw new TokenInvalidoException("Token inválido o malformado"); // -> 401
         }
     }
 

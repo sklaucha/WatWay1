@@ -46,7 +46,7 @@ public class MensajeService {
                         matchRepository.existsByUsuarioOrigenAndUsuarioDestinoAndMatched(receptor, emisor, true);
 
         if (!tienenMatch) {
-            throw new RuntimeException("Solo podés chatear con tus matches.");
+            throw new IllegalArgumentException("Solo podés chatear con tus matches.");
         }
 
         MensajeEntity mensaje = MensajeEntity.builder()

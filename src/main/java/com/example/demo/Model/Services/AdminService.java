@@ -48,11 +48,16 @@ public class AdminService {
 
     public void asignarRol(Long credentialId, String rolNombre) {
         CredentialsEntity credentials = credentialsRepository.findById(credentialId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado")); // -> 404
 
-        Role role = Role.valueOf(rolNombre.toUpperCase());
+        Role role;
+        try {
+            role = Role.valueOf(rolNombre.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Rol inválido"); // -> 400, sin mostrar nombres internos
+        }
         RoleEntity roleEntity = roleRepository.findByRole(role)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Rol inválido"));
 
         credentials.getRoles().add(roleEntity);
         credentialsRepository.save(credentials);

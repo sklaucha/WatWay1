@@ -15,6 +15,6 @@ public class CambiarPasswordDTO {
     private String actual;
 
     @NotBlank(message = "Ingresá la nueva contraseña")
-    @Size(min = 6, max = 100, message = "La nueva contraseña debe tener al menos 6 caracteres")
+    @Size(min = 6, max = 72, message = "La nueva contraseña debe tener entre 6 y 72 caracteres")
     private String nueva;
 }

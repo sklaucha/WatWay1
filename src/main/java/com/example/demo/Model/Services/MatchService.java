@@ -64,7 +64,7 @@ public class MatchService {
         UsuarioEntity origen = getUsuarioActual();
 
         if (origen.getId().equals(usuarioDestinoId))
-            throw new RuntimeException("No podés darte like a vos mismo.");
+            throw new IllegalArgumentException("No podés darte like a vos mismo.");
 
         UsuarioEntity destino = usuarioRepository.findById(usuarioDestinoId)
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
@@ -88,7 +88,7 @@ public class MatchService {
         UsuarioEntity origen = getUsuarioActual();
 
         if (origen.getId().equals(usuarioDestinoId))
-            throw new RuntimeException("No podés darte dislike a vos mismo.");
+            throw new IllegalArgumentException("No podés darte dislike a vos mismo.");
 
         UsuarioEntity destino = usuarioRepository.findById(usuarioDestinoId)
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));

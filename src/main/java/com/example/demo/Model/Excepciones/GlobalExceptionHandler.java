@@ -2,8 +2,10 @@ package com.example.demo.Model.Exceptions;
 
 import com.example.demo.Model.Excepciones.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -96,11 +98,25 @@ public class GlobalExceptionHandler {
         return buildResponse("Email o contraseña incorrectos", HttpStatus.UNAUTHORIZED);
     }
 
+    // JSON roto, texto donde va un número, fecha imposible (2026-02-30),
+    // valor de enum que no existe o body vacío -> error del cliente, 400
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleJsonInvalido(HttpMessageNotReadableException ex) {
+        return buildResponse("Formato de datos inválido. Revisá los campos enviados.", HttpStatus.BAD_REQUEST);
+    }
+
+    // Red de seguridad: la base rechaza el dato (texto demasiado largo, campo obligatorio vacío) -> 400
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDatosInvalidos(DataIntegrityViolationException ex) {
+        return buildResponse("Los datos enviados no son válidos.", HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
-        // Imprime el error completo en la consola para poder ver la causa real
+        // El detalle va solo a la consola: al cliente no le mostramos
+        // mensajes internos (SQL, nombres de clases, etc.)
         ex.printStackTrace();
-        return buildResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildResponse("Ocurrió un error inesperado en el servidor", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(String message, HttpStatus status) {

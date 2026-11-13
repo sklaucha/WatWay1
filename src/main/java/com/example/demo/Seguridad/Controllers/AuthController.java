@@ -37,8 +37,16 @@
 
         @PostMapping("/refresh")
         public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshTokenRequest request) {
+            String token = request.getRefreshToken();
+            if (token == null || token.isBlank())
+                return ResponseEntity.status(401).build();
+
             // Si el refresh token ya se cerró con logout/baja, no sirve más
-            if (tokenBlacklistService.isBlacklisted(request.getRefreshToken()))
+            if (tokenBlacklistService.isBlacklisted(token))
+                return ResponseEntity.status(401).build();
+
+            // Acá solo se acepta un refresh token, no uno de acceso
+            if (jwtService.isAccessToken(token))
                 return ResponseEntity.status(401).build();
 
             String email = jwtService.extractUsername(request.getRefreshToken());

@@ -68,6 +68,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         // y el usuario ya no puede loguearse ni usar su token.
         UsuarioEntity usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
+        // El admin no puede desactivarse a sí mismo: si fuera el único admin,
+        // el sistema se quedaría sin nadie que lo administre.
+        if (usuario.getId().equals(getUsuarioActual().getId()))
+            throw new IllegalArgumentException("No podés desactivar tu propia cuenta desde el panel de admin");
         usuario.setActivo(false);
         usuarioRepository.save(usuario);
     }

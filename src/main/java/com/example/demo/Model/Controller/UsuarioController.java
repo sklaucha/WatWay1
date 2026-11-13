@@ -3,28 +3,22 @@ package com.example.demo.Model.Controller;
 import com.example.demo.Model.DTO.ActualizarUsuarioDTO;
 import com.example.demo.Model.DTO.CambiarPasswordDTO;
 import com.example.demo.Model.DTO.UsuarioResponseDTO;
-import com.example.demo.Model.Entities.UsuarioEntity;
-import com.example.demo.Model.Repository.UsuarioRepository;
 import com.example.demo.Model.Services.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
 public class UsuarioController {
 
-    private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
 
-    @GetMapping
-    public List<UsuarioEntity> getAll() {
-        return usuarioRepository.findAll();
-    }
+    // Ya no existe GET /usuarios: devolvía las entidades completas de todos
+    // (con email y hash de contraseña). Para listar usuarios está GET /admin/usuarios,
+    // solo para ADMIN y con un DTO que no incluye la contraseña.
 
     // ---------- CRUD del perfil propio ----------
     // Crear  -> POST   /auth/register
