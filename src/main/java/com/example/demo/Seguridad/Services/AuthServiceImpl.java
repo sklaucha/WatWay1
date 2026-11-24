@@ -2,9 +2,6 @@ package com.example.demo.Seguridad.Services;
 
 import com.example.demo.Model.DTO.LoginRequestDTO;
 import com.example.demo.Model.DTO.RegisterRequestDTO;
-import com.example.demo.Model.Entities.UsuarioEntity;
-import com.example.demo.Model.Excepciones.EmailYaRegistradoException;
-import com.example.demo.Model.Repository.UsuarioRepository;
 import com.example.demo.Seguridad.DTO.AuthResponse;
 import com.example.demo.Seguridad.Entities.CredentialsEntity;
 import com.example.demo.Seguridad.Repositories.CredentialsRepository;
@@ -14,16 +11,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UsuarioRepository usuarioRepository;
     private final CredentialsRepository credentialsRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final RegistroFacade registroFacade;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
@@ -46,32 +41,10 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
+    // El registro lo resuelve la fachada; acá solo se generan los tokens
     @Override
     public AuthResponse register(RegisterRequestDTO request) {
-        if (credentialsRepository.existsByEmail(request.getEmail()))
-            throw new EmailYaRegistradoException("El email ya está registrado"); // -> 409
-
-        // Guardar datos del usuario
-        UsuarioEntity usuario = UsuarioEntity.builder()
-                .nombre(request.getNombre())
-                .apellido(request.getApellido())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .posicionLaboral(request.getPosicionLaboral())
-                .ciudadDestino(request.getCiudadDestino())
-                .sexo(request.getSexo())
-                .descripcion(request.getDescripcion())
-                .build();
-        usuarioRepository.save(usuario);
-
-        // Guardar credenciales de seguridad
-        CredentialsEntity credentials = CredentialsEntity.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .usuario(usuario)
-                .build();
-        credentialsRepository.save(credentials);
-
+        CredentialsEntity credentials = registroFacade.registrar(request);
         return new AuthResponse(
                 jwtService.generateToken(credentials),
                 jwtService.generateRefreshToken(credentials)

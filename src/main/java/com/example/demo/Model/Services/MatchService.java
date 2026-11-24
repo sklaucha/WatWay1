@@ -9,10 +9,8 @@ import com.example.demo.Model.Excepciones.UsuarioYaEvaluadoException;
 import com.example.demo.Model.Mappers.UsuarioMapper;
 import com.example.demo.Model.Repository.MatchRepository;
 import com.example.demo.Model.Repository.UsuarioRepository;
-import com.example.demo.Seguridad.Entities.CredentialsEntity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +27,10 @@ public class MatchService {
     private final UsuarioRepository usuarioRepository;
     private final MatchRepository matchRepository;
     private final UsuarioMapper usuarioMapper;
-
-    private UsuarioEntity getUsuarioActual() {
-        CredentialsEntity credentials = (CredentialsEntity)
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return usuarioRepository.findByEmail(credentials.getEmail())
-                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
-    }
+    private final UsuarioActualProvider usuarioActual;
 
     public List<UsuarioMatchDTO> getCandidatos() {
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         List<Long> yaEvaluados = matchRepository.findUsuariosEvaluadosByOrigen(actual);
         yaEvaluados.add(actual.getId());
         return usuarioRepository.findByCiudadDestinoIgnoreCaseAndIdNotIn(
@@ -49,7 +41,7 @@ public class MatchService {
     }
 
     public UsuarioMatchDTO getCandidato() {
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         List<Long> yaEvaluados = matchRepository.findUsuariosEvaluadosByOrigen(actual);
         yaEvaluados.add(actual.getId());
         List<UsuarioEntity> candidatos = new ArrayList<>(usuarioRepository
@@ -61,7 +53,7 @@ public class MatchService {
     }
 
     public String like(Long usuarioDestinoId) {
-        UsuarioEntity origen = getUsuarioActual();
+        UsuarioEntity origen = usuarioActual.getUsuario();
 
         if (origen.getId().equals(usuarioDestinoId))
             throw new IllegalArgumentException("No podés darte like a vos mismo.");
@@ -85,7 +77,7 @@ public class MatchService {
     }
 
     public String dislike(Long usuarioDestinoId) {
-        UsuarioEntity origen = getUsuarioActual();
+        UsuarioEntity origen = usuarioActual.getUsuario();
 
         if (origen.getId().equals(usuarioDestinoId))
             throw new IllegalArgumentException("No podés darte dislike a vos mismo.");
@@ -100,7 +92,7 @@ public class MatchService {
     }
 
     public List<UsuarioMatchDTO> getMatches() {
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         List<UsuarioEntity> matchesComoOrigen = matchRepository
                 .findByUsuarioOrigenAndMatched(actual, true).stream()
                 .map(MatchEntity::getUsuarioDestino).collect(Collectors.toList());
@@ -118,7 +110,7 @@ public class MatchService {
     // Los mensajes viejos se conservan.
     @Transactional
     public String eliminarMatch(Long otroUsuarioId) {
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         UsuarioEntity otro = usuarioRepository.findById(otroUsuarioId)
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
 

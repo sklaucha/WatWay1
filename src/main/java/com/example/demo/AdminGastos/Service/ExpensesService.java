@@ -3,14 +3,10 @@ package com.example.demo.AdminGastos.Service;
 import com.example.demo.AdminGastos.DTO.MovimientoDTO;
 import com.example.demo.AdminGastos.Entitys.ExpensesEntity;
 import com.example.demo.AdminGastos.Repository.ExpensesRepository;
-import com.example.demo.Model.Entities.UsuarioEntity;
 import com.example.demo.Model.Enums.ExpenseGroup;
-import com.example.demo.Model.Excepciones.UsuarioNotFoundException;
-import com.example.demo.Model.Repository.UsuarioRepository;
-import com.example.demo.Seguridad.Entities.CredentialsEntity;
+import com.example.demo.Model.Services.UsuarioActualProvider;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,29 +16,22 @@ import java.util.List;
 public class ExpensesService {
 
     private final ExpensesRepository expensesRepository;
-    private final UsuarioRepository usuarioRepository;
-
-    // Usuario logueado, sacado del token JWT
-    private UsuarioEntity getUsuarioActual() {
-        CredentialsEntity credentials = (CredentialsEntity)
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return usuarioRepository.findByEmail(credentials.getEmail())
-                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
-    }
+    // Quién está logueado lo resuelve UsuarioActualProvider (Fabricación Pura + DIP)
+    private final UsuarioActualProvider usuarioActual;
 
     // Si el movimiento es de otro usuario respondemos "no encontrado" para no dar pistas
     private ExpensesEntity buscarMovimientoPropio(Long id) {
         ExpensesEntity movimiento = expensesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movimiento no encontrado"));
         if (movimiento.getUsuario() == null
-                || !movimiento.getUsuario().getId().equals(getUsuarioActual().getId()))
+                || !movimiento.getUsuario().getId().equals(usuarioActual.getUsuario().getId()))
             throw new EntityNotFoundException("Movimiento no encontrado");
         return movimiento;
     }
 
     // READ
     public List<MovimientoDTO> listar() {
-        return expensesRepository.findByUsuario_IdOrderByDateDescIdDesc(getUsuarioActual().getId())
+        return expensesRepository.findByUsuario_IdOrderByDateDescIdDesc(usuarioActual.getUsuario().getId())
                 .stream().map(this::toDto).toList();
     }
 
@@ -50,7 +39,7 @@ public class ExpensesService {
     public MovimientoDTO crear(MovimientoDTO dto) {
         ExpensesEntity movimiento = new ExpensesEntity();
         copiarDatos(dto, movimiento);
-        movimiento.setUsuario(getUsuarioActual());
+        movimiento.setUsuario(usuarioActual.getUsuario());
         return toDto(expensesRepository.save(movimiento));
     }
 

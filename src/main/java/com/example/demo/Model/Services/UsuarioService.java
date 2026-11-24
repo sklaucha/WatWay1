@@ -2,14 +2,11 @@ package com.example.demo.Model.Services;
 
 import com.example.demo.Model.DTO.ActualizarUsuarioDTO;
 import com.example.demo.Model.DTO.CambiarPasswordDTO;
-import com.example.demo.Model.DTO.RegisterRequestDTO;
 import com.example.demo.Model.DTO.UsuarioResponseDTO;
 
 import java.util.List;
 
 public interface UsuarioService {
-
-    UsuarioResponseDTO crearUsuario(RegisterRequestDTO request);
 
     UsuarioResponseDTO obtenerUsuario(Long id);
 

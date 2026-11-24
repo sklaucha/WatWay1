@@ -1,20 +1,14 @@
 package com.example.demo.Seguridad.Services;
 
-import org.springframework.stereotype.Service;
+// INVERSIÓN DE DEPENDENCIAS (SOLID): el filtro JWT y el AuthController dependen
+// de esta interfaz, no de cómo se guardan los tokens. Antes era una clase con
+// un HashSet en memoria (se perdía al reiniciar y no era seguro con varias
+// peticiones a la vez). Ahora la implementación es TokenBlacklistJpaService,
+// que guarda en MySQL. Si mañana se usa Redis, se crea otra implementación
+// y ninguna de las clases que la usan cambia.
+public interface TokenBlacklistService {
 
-import java.util.HashSet;
-import java.util.Set;
+    void blacklist(String token);
 
-@Service
-public class TokenBlacklistService {
-
-    private final Set<String> blacklistedTokens = new HashSet<>();
-
-    public void blacklist(String token) {
-        blacklistedTokens.add(token);
-    }
-
-    public boolean isBlacklisted(String token) {
-        return blacklistedTokens.contains(token);
-    }
+    boolean isBlacklisted(String token);
 }
