@@ -29,7 +29,7 @@ public class AdminService {
     public List<AdminUsuarioDTO> listarUsuarios() {
         // Armamos un "diccionario" usuarioId -> credenciales,
         // así no hacemos una consulta a la base por cada usuario.
-        Map<Long, CredentialsEntity> credencialesPorUsuario = credentialsRepository.findAll().stream()
+        Map<Long, CredentialsEntity> credencialesPorUsuario = credentialsRepository.findAllConUsuarioYRoles().stream()
                 .filter(c -> c.getUsuario() != null)
                 .collect(Collectors.toMap(c -> c.getUsuario().getId(), c -> c));
 

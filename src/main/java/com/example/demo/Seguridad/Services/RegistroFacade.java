@@ -10,6 +10,7 @@ import com.example.demo.Seguridad.Enum.Role;
 import com.example.demo.Seguridad.Repositories.CredentialsRepository;
 import com.example.demo.Seguridad.Repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +38,23 @@ public class RegistroFacade {
         // Se hashea una sola vez y se usa el mismo hash en las dos tablas
         String hash = passwordEncoder.encode(request.getPassword());
 
-        UsuarioEntity usuario = usuarioRepository.save(usuarioFactory.crearUsuario(request, hash));
+        // Si dos registros con el mismo email llegan juntos, los dos pasan el "existsByEmail".
+        // La que frena al segundo es la restricción UNIQUE de la base: se traduce a 409.
+        UsuarioEntity usuario;
+        try {
+            usuario = usuarioRepository.saveAndFlush(usuarioFactory.crearUsuario(request, hash));
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailYaRegistradoException("El email ya está registrado");
+        }
 
         // Todo usuario nuevo arranca con rol USER (antes quedaba sin ningún rol)
         RoleEntity rolUser = roleRepository.findByRole(Role.USER)
                 .orElseThrow(() -> new IllegalStateException("Falta el rol USER en la base"));
 
-        return credentialsRepository.save(usuarioFactory.crearCredenciales(usuario, hash, rolUser));
+        try {
+            return credentialsRepository.saveAndFlush(usuarioFactory.crearCredenciales(usuario, hash, rolUser));
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailYaRegistradoException("El email ya está registrado");
+        }
     }
 }

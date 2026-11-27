@@ -14,6 +14,7 @@ import com.example.demo.Model.Services.denuncias.ManejadorDenuncia;
 import com.example.demo.Seguridad.Repositories.CredentialsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -51,9 +52,12 @@ public class DenunciaService {
 
     // ================= USUARIO =================
 
-    @Transactional
+    // Bloqueo + READ_COMMITTED (igual que en los likes): dos denuncias iguales
+    // enviadas a la vez se procesan de a una y la segunda choca con "Ya denunciaste esto".
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public DenunciaDTO crear(CrearDenunciaDTO dto) {
-        UsuarioEntity actual = usuarioActual.getUsuario();
+        UsuarioEntity actual = usuarioRepository.bloquear(usuarioActual.getUsuario().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
         ManejadorDenuncia manejador = manejador(dto.getTipo());
         ContenidoDenunciado contenido = manejador.buscar(dto.getReferenciaId(), actual);
 

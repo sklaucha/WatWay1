@@ -12,6 +12,7 @@ import com.example.demo.Model.Repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -52,8 +53,13 @@ public class MatchService {
         return usuarioMapper.toMatchDTO(candidatos.get(0));
     }
 
+    // Bloqueo + READ_COMMITTED: si llegan dos likes juntos (doble click), el segundo
+    // espera al primero y después ve su fila -> "Ya evaluaste a este usuario".
+    // READ_COMMITTED hace que cada consulta vea lo último confirmado en la base
+    // (con el modo por defecto de MySQL, REPEATABLE READ, seguiría viendo la foto vieja).
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public String like(Long usuarioDestinoId) {
-        UsuarioEntity origen = usuarioActual.getUsuario();
+        UsuarioEntity origen = bloquearUsuarioActual();
 
         if (origen.getId().equals(usuarioDestinoId))
             throw new IllegalArgumentException("No podés darte like a vos mismo.");
@@ -76,8 +82,9 @@ public class MatchService {
         return "Like enviado";
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public String dislike(Long usuarioDestinoId) {
-        UsuarioEntity origen = usuarioActual.getUsuario();
+        UsuarioEntity origen = bloquearUsuarioActual();
 
         if (origen.getId().equals(usuarioDestinoId))
             throw new IllegalArgumentException("No podés darte dislike a vos mismo.");
@@ -89,6 +96,13 @@ public class MatchService {
         matchRepository.save(MatchEntity.builder()
                 .usuarioOrigen(origen).usuarioDestino(destino).liked(false).matched(false).build());
         return "Dislike registrado";
+    }
+
+    // Bloquea la fila del usuario logueado hasta que termine la transacción
+    private UsuarioEntity bloquearUsuarioActual() {
+        Long id = usuarioActual.getUsuario().getId();
+        return usuarioRepository.bloquear(id)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
     }
 
     public List<UsuarioMatchDTO> getMatches() {

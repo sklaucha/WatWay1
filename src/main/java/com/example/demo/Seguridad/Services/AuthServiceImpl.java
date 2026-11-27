@@ -24,15 +24,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequestDTO request) {
+        // Se ignoran los espacios de más que se cuelan al copiar y pegar el email
+        String email = request.getEmail() == null ? "" : request.getEmail().trim();
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(email, request.getPassword())
             );
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Contraseña incorrecta");
         }
 
-        CredentialsEntity credentials = credentialsRepository.findByEmail(request.getEmail())
+        CredentialsEntity credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
         return new AuthResponse(
@@ -43,7 +45,11 @@ public class AuthServiceImpl implements AuthService {
 
     // El registro lo resuelve la fachada; acá solo se generan los tokens
     @Override
-    public AuthResponse register(RegisterRequestDTO request) {
+    // synchronized: los registros se procesan de a uno (doble click en "Crear cuenta").
+    // Está FUERA de la transacción a propósito: la fachada confirma (commit) antes de
+    // soltar el candado, así el siguiente ya ve el email guardado y responde 409.
+    // La garantía de fondo es la restricción UNIQUE en la base (ver RegistroFacade).
+    public synchronized AuthResponse register(RegisterRequestDTO request) {
         CredentialsEntity credentials = registroFacade.registrar(request);
         return new AuthResponse(
                 jwtService.generateToken(credentials),
