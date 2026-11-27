@@ -58,6 +58,15 @@ public class AdminController {
         return ResponseEntity.ok("Rol asignado correctamente.");
     }
 
+    // Quitar un rol (por ejemplo ADMIN). Reglas en AdminService.quitarRol
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/usuarios/{credentialId}/rol/{rol}")
+    public ResponseEntity<String> quitarRol(@PathVariable Long credentialId,
+                                            @PathVariable String rol) {
+        adminService.quitarRol(credentialId, rol);
+        return ResponseEntity.ok("Rol quitado correctamente.");
+    }
+
     // Marca o desmarca si la agencia tiene empleadores en un estado (pinta el mapa del foro)
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/estados/{codigo}/empleadores")
