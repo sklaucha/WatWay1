@@ -15,7 +15,7 @@ public class MovimientoDTO {
     private String description;
 
     @NotNull(message = "El monto es obligatorio")
-    @DecimalMin(value = "0", message = "El monto no puede ser negativo")
+    @Positive(message = "El monto debe ser mayor a 0")
     @DecimalMax(value = "10000000", message = "El monto es demasiado alto")
     @Digits(integer = 8, fraction = 2, message = "El monto puede tener hasta 2 decimales")
     private BigDecimal cost;
