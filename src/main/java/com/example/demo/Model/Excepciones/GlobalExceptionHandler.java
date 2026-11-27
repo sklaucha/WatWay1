@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -109,6 +110,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDatosInvalidos(DataIntegrityViolationException ex) {
         return buildResponse("Los datos enviados no son válidos.", HttpStatus.BAD_REQUEST);
+    }
+
+    // Logueado, pero sin permiso para esa acción (ej: editar un tema ajeno) -> 403
+    @ExceptionHandler(AccionNoPermitidaException.class)
+    public ResponseEntity<Map<String, Object>> handleAccionNoPermitida(AccionNoPermitidaException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    // Cambio de estado que no corresponde (ej: resolver una denuncia ya cerrada) -> 409
+    @ExceptionHandler(TransicionInvalidaException.class)
+    public ResponseEntity<Map<String, Object>> handleTransicionInvalida(TransicionInvalidaException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    // Un @PreAuthorize que no se cumple (ej: un usuario común quiere crear una FAQ) -> 403.
+    // Sin esto lo atraparía el handler de RuntimeException y respondería 500.
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccesoDenegado(AccessDeniedException ex) {
+        return buildResponse("Acceso denegado", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(RuntimeException.class)

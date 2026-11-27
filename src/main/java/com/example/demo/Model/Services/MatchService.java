@@ -9,11 +9,10 @@ import com.example.demo.Model.Excepciones.UsuarioYaEvaluadoException;
 import com.example.demo.Model.Mappers.UsuarioMapper;
 import com.example.demo.Model.Repository.MatchRepository;
 import com.example.demo.Model.Repository.UsuarioRepository;
-import com.example.demo.Seguridad.Entities.CredentialsEntity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -29,19 +28,13 @@ public class MatchService {
     private final UsuarioRepository usuarioRepository;
     private final MatchRepository matchRepository;
     private final UsuarioMapper usuarioMapper;
-
-    private UsuarioEntity getUsuarioActual() {
-        CredentialsEntity credentials = (CredentialsEntity)
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return usuarioRepository.findByEmail(credentials.getEmail())
-                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
-    }
+    private final UsuarioActualProvider usuarioActual;
 
     public List<UsuarioMatchDTO> getCandidatos() {
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         List<Long> yaEvaluados = matchRepository.findUsuariosEvaluadosByOrigen(actual);
         yaEvaluados.add(actual.getId());
-        return usuarioRepository.findByCiudadDestinoIgnoreCaseAndIdNotIn(
+        return usuarioRepository.findByCiudadDestinoIgnoreCaseAndIdNotInAndActivoTrue(
                         actual.getCiudadDestino(), yaEvaluados)
                 .stream()
                 .map(usuarioMapper::toMatchDTO)
@@ -49,19 +42,24 @@ public class MatchService {
     }
 
     public UsuarioMatchDTO getCandidato() {
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         List<Long> yaEvaluados = matchRepository.findUsuariosEvaluadosByOrigen(actual);
         yaEvaluados.add(actual.getId());
         List<UsuarioEntity> candidatos = new ArrayList<>(usuarioRepository
-                .findByCiudadDestinoIgnoreCaseAndIdNotIn(actual.getCiudadDestino(), yaEvaluados));
+                .findByCiudadDestinoIgnoreCaseAndIdNotInAndActivoTrue(actual.getCiudadDestino(), yaEvaluados));
         if (candidatos.isEmpty())
             throw new SinCandidatosException("No hay más candidatos disponibles.");
         Collections.shuffle(candidatos);
         return usuarioMapper.toMatchDTO(candidatos.get(0));
     }
 
+    // Bloqueo + READ_COMMITTED: si llegan dos likes juntos (doble click), el segundo
+    // espera al primero y después ve su fila -> "Ya evaluaste a este usuario".
+    // READ_COMMITTED hace que cada consulta vea lo último confirmado en la base
+    // (con el modo por defecto de MySQL, REPEATABLE READ, seguiría viendo la foto vieja).
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public String like(Long usuarioDestinoId) {
-        UsuarioEntity origen = getUsuarioActual();
+        UsuarioEntity origen = bloquearUsuarioActual();
 
         if (origen.getId().equals(usuarioDestinoId))
             throw new IllegalArgumentException("No podés darte like a vos mismo.");
@@ -84,8 +82,9 @@ public class MatchService {
         return "Like enviado";
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public String dislike(Long usuarioDestinoId) {
-        UsuarioEntity origen = getUsuarioActual();
+        UsuarioEntity origen = bloquearUsuarioActual();
 
         if (origen.getId().equals(usuarioDestinoId))
             throw new IllegalArgumentException("No podés darte dislike a vos mismo.");
@@ -99,16 +98,47 @@ public class MatchService {
         return "Dislike registrado";
     }
 
+    // Bloquea la fila del usuario logueado hasta que termine la transacción
+    private UsuarioEntity bloquearUsuarioActual() {
+        Long id = usuarioActual.getUsuario().getId();
+        return usuarioRepository.bloquear(id)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
+    }
+
     public List<UsuarioMatchDTO> getMatches() {
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         List<UsuarioEntity> matchesComoOrigen = matchRepository
                 .findByUsuarioOrigenAndMatched(actual, true).stream()
                 .map(MatchEntity::getUsuarioDestino).collect(Collectors.toList());
         List<UsuarioEntity> matchesComoDestino = matchRepository
                 .findByUsuarioDestinoAndMatched(actual, true).stream()
                 .map(MatchEntity::getUsuarioOrigen).collect(Collectors.toList());
+        // Los usuarios desactivados no se muestran
         return Stream.concat(matchesComoOrigen.stream(), matchesComoDestino.stream())
+                .filter(UsuarioEntity::isActivo)
                 .distinct().map(usuarioMapper::toMatchDTO).collect(Collectors.toList());
+    }
+
+    // Oculta un perfil para "origen" (se usa al denunciarlo), como un bloqueo:
+    //  - si no lo había evaluado, se registra como dislike -> no le aparece más de candidato
+    //  - si tenían match, se deshace igual que en eliminarMatch -> sale de la lista y el chat se cierra
+    @Transactional
+    public void ocultarPerfil(UsuarioEntity origen, UsuarioEntity otro) {
+        List<MatchEntity> mios = matchRepository.findByUsuarioOrigenAndUsuarioDestino(origen, otro);
+        List<MatchEntity> suyos = matchRepository.findByUsuarioOrigenAndUsuarioDestino(otro, origen);
+
+        if (mios.isEmpty()) {
+            matchRepository.save(MatchEntity.builder()
+                    .usuarioOrigen(origen).usuarioDestino(otro).liked(false).matched(false).build());
+        } else {
+            mios.forEach(m -> {
+                m.setLiked(false);
+                m.setMatched(false);
+            });
+            matchRepository.saveAll(mios);
+        }
+        suyos.forEach(m -> m.setMatched(false));
+        matchRepository.saveAll(suyos);
     }
 
     // Deshacer un match: no se borran las filas, se marcan como "no match".
@@ -118,7 +148,7 @@ public class MatchService {
     // Los mensajes viejos se conservan.
     @Transactional
     public String eliminarMatch(Long otroUsuarioId) {
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         UsuarioEntity otro = usuarioRepository.findById(otroUsuarioId)
                 .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
 

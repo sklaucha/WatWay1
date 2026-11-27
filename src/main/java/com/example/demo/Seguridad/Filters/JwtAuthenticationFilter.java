@@ -31,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getServletPath();
-        System.out.println("PATH: " + path);
 
         // Solo se saltean las rutas públicas de /auth.
         // /auth/logout y /auth/baja necesitan el token, así que pasan por el filtro.
@@ -48,7 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String authHeader = request.getHeader("Authorization");
-        System.out.println("AUTH HEADER: " + authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -67,22 +65,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             final String username = jwtService.extractUsername(jwt);
-            System.out.println("USERNAME: " + username);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (jwtService.isAccessToken(jwt) && jwtService.isTokenValid(jwt, userDetails)) {
-                    System.out.println("TOKEN VALIDO");
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                } else {
-                    System.out.println("TOKEN INVALIDO");
                 }
             }
         } catch (Exception e) {
-            System.out.println("ERROR EN FILTRO JWT: " + e.getMessage());
+            // Token inválido o vencido: se sigue sin autenticar y Spring responde 401.
+            // No se imprime el token: cualquiera que lea los logs podría usarlo.
         }
 
         filterChain.doFilter(request, response);

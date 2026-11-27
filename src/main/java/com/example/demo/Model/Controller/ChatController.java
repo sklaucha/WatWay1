@@ -3,6 +3,7 @@ package com.example.demo.Model.Controller;
 import com.example.demo.Model.DTO.EditarMensajeDTO;
 import com.example.demo.Model.DTO.EnviarMensajeDTO;
 import com.example.demo.Model.DTO.MensajeDTO;
+import com.example.demo.Model.DTO.NoLeidosDTO;
 import com.example.demo.Model.Services.MensajeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,18 @@ public class ChatController {
         return ResponseEntity.ok(mensajeService.getConversacion(usuarioId));
     }
 
+    // Cuántos mensajes sin leer tengo de cada match: [{ usuarioId, cantidad }]
+    @GetMapping("/no-leidos")
+    public ResponseEntity<List<NoLeidosDTO>> noLeidos() {
+        return ResponseEntity.ok(mensajeService.contarNoLeidos());
+    }
+
     // ---------- CRUD de mensajes ----------
     // Crear  -> POST   /chat/enviar
     // Leer   -> GET    /chat/conversacion/{usuarioId}
     // Editar -> PUT    /chat/mensajes/{mensajeId}
-    // Borrar -> DELETE /chat/mensajes/{mensajeId}
+    // Borrar -> DELETE /chat/mensajes/{mensajeId}  (queda "Mensaje eliminado")
+    // Editar y borrar: solo quien lo mandó y solo si el otro todavía no lo leyó
 
     @PutMapping("/mensajes/{mensajeId}")
     public ResponseEntity<MensajeDTO> editarMensaje(@PathVariable Long mensajeId,

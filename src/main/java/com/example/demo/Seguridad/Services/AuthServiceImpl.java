@@ -2,9 +2,6 @@ package com.example.demo.Seguridad.Services;
 
 import com.example.demo.Model.DTO.LoginRequestDTO;
 import com.example.demo.Model.DTO.RegisterRequestDTO;
-import com.example.demo.Model.Entities.UsuarioEntity;
-import com.example.demo.Model.Excepciones.EmailYaRegistradoException;
-import com.example.demo.Model.Repository.UsuarioRepository;
 import com.example.demo.Seguridad.DTO.AuthResponse;
 import com.example.demo.Seguridad.Entities.CredentialsEntity;
 import com.example.demo.Seguridad.Repositories.CredentialsRepository;
@@ -14,30 +11,30 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UsuarioRepository usuarioRepository;
     private final CredentialsRepository credentialsRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final RegistroFacade registroFacade;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     @Override
     public AuthResponse login(LoginRequestDTO request) {
+        // Se ignoran los espacios de más que se cuelan al copiar y pegar el email
+        String email = request.getEmail() == null ? "" : request.getEmail().trim();
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(email, request.getPassword())
             );
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Contraseña incorrecta");
         }
 
-        CredentialsEntity credentials = credentialsRepository.findByEmail(request.getEmail())
+        CredentialsEntity credentials = credentialsRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
         return new AuthResponse(
@@ -46,32 +43,14 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
+    // El registro lo resuelve la fachada; acá solo se generan los tokens
     @Override
-    public AuthResponse register(RegisterRequestDTO request) {
-        if (credentialsRepository.existsByEmail(request.getEmail()))
-            throw new EmailYaRegistradoException("El email ya está registrado"); // -> 409
-
-        // Guardar datos del usuario
-        UsuarioEntity usuario = UsuarioEntity.builder()
-                .nombre(request.getNombre())
-                .apellido(request.getApellido())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .posicionLaboral(request.getPosicionLaboral())
-                .ciudadDestino(request.getCiudadDestino())
-                .sexo(request.getSexo())
-                .descripcion(request.getDescripcion())
-                .build();
-        usuarioRepository.save(usuario);
-
-        // Guardar credenciales de seguridad
-        CredentialsEntity credentials = CredentialsEntity.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .usuario(usuario)
-                .build();
-        credentialsRepository.save(credentials);
-
+    // synchronized: los registros se procesan de a uno (doble click en "Crear cuenta").
+    // Está FUERA de la transacción a propósito: la fachada confirma (commit) antes de
+    // soltar el candado, así el siguiente ya ve el email guardado y responde 409.
+    // La garantía de fondo es la restricción UNIQUE en la base (ver RegistroFacade).
+    public synchronized AuthResponse register(RegisterRequestDTO request) {
+        CredentialsEntity credentials = registroFacade.registrar(request);
         return new AuthResponse(
                 jwtService.generateToken(credentials),
                 jwtService.generateRefreshToken(credentials)

@@ -7,15 +7,11 @@ import com.example.demo.Model.Entities.ChecklistItem;
 import com.example.demo.Model.Entities.UsuarioEntity;
 import com.example.demo.Model.Enums.Documento;
 import com.example.demo.Model.Excepciones.DocumentoYaAgregadoException;
-import com.example.demo.Model.Excepciones.UsuarioNotFoundException;
 import com.example.demo.Model.Repository.ChecklistItemRepository;
 import com.example.demo.Model.Repository.ChecklistRepository;
-import com.example.demo.Model.Repository.UsuarioRepository;
-import com.example.demo.Seguridad.Entities.CredentialsEntity;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -27,19 +23,10 @@ import java.util.stream.Collectors;
 public class ChecklistService {
     private final ChecklistRepository checklistRepository;
     private final ChecklistItemRepository checklistItemRepository;
-    private final UsuarioRepository usuarioRepository;
-
-    // ---------- Usuario logueado ----------
-
-    private UsuarioEntity getUsuarioActual() {
-        CredentialsEntity credentials = (CredentialsEntity)
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return usuarioRepository.findByEmail(credentials.getEmail())
-                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
-    }
+    private final UsuarioActualProvider usuarioActual;
 
     private void verificarPropietario(Checklist checklist) {
-        if (!checklist.getUsuario().getId().equals(getUsuarioActual().getId())) {
+        if (!checklist.getUsuario().getId().equals(usuarioActual.getUsuario().getId())) {
             throw new EntityNotFoundException("Checklist no encontrado");
         }
     }
@@ -49,7 +36,7 @@ public class ChecklistService {
     // Si el usuario todavía no tiene checklist, se crea con todos los documentos sin marcar
     @Transactional
     public ChecklistResumenDTO obtenerMiResumen() {
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         Checklist checklist = checklistRepository.findByUsuarioId(actual.getId())
                 .orElseGet(() -> crearParaUsuario(actual));
         return armarResumen(checklist.getId());
@@ -81,7 +68,7 @@ public class ChecklistService {
         if (request.getDocumento() == null)
             throw new IllegalArgumentException("El documento es obligatorio");
 
-        UsuarioEntity actual = getUsuarioActual();
+        UsuarioEntity actual = usuarioActual.getUsuario();
         Checklist checklist = checklistRepository.findByUsuarioId(actual.getId())
                 .orElseGet(() -> crearParaUsuario(actual));
 

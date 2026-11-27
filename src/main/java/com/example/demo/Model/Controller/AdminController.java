@@ -1,8 +1,12 @@
 package com.example.demo.Model.Controller;
 
 import com.example.demo.Model.DTO.AdminUsuarioDTO;
+import com.example.demo.Model.DTO.EmpleadoresDTO;
+import com.example.demo.Model.DTO.EstadoForoDTO;
 import com.example.demo.Model.Services.AdminService;
+import com.example.demo.Model.Services.ForoService;
 import com.example.demo.Model.Services.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +23,7 @@ public class AdminController {
 
     private final UsuarioService usuarioService;
     private final AdminService adminService;
+    private final ForoService foroService;
 
     @GetMapping("/ping")
     public ResponseEntity<String> ping() {
@@ -51,5 +56,13 @@ public class AdminController {
                                              @PathVariable String rol) {
         adminService.asignarRol(credentialId, rol);
         return ResponseEntity.ok("Rol asignado correctamente.");
+    }
+
+    // Marca o desmarca si la agencia tiene empleadores en un estado (pinta el mapa del foro)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/estados/{codigo}/empleadores")
+    public ResponseEntity<EstadoForoDTO> marcarEmpleadores(@PathVariable String codigo,
+                                                           @Valid @RequestBody EmpleadoresDTO dto) {
+        return ResponseEntity.ok(foroService.marcarEmpleadores(codigo, dto.getTieneEmpleadores()));
     }
 }
