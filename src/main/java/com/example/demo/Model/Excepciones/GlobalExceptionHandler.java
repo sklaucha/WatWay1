@@ -118,6 +118,12 @@ public class GlobalExceptionHandler {
         return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
+    // Cambio de estado que no corresponde (ej: resolver una denuncia ya cerrada) -> 409
+    @ExceptionHandler(TransicionInvalidaException.class)
+    public ResponseEntity<Map<String, Object>> handleTransicionInvalida(TransicionInvalidaException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
     // Un @PreAuthorize que no se cumple (ej: un usuario común quiere crear una FAQ) -> 403.
     // Sin esto lo atraparía el handler de RuntimeException y respondería 500.
     @ExceptionHandler(AccessDeniedException.class)
