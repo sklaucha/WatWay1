@@ -1,6 +1,7 @@
 package com.example.demo.Seguridad.Repositories;
 
 import com.example.demo.Seguridad.Entities.CredentialsEntity;
+import com.example.demo.Seguridad.Enum.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -19,4 +20,7 @@ public interface CredentialsRepository extends JpaRepository<CredentialsEntity, 
             "LEFT JOIN FETCH c.roles r " +
             "LEFT JOIN FETCH r.permits")
     List<CredentialsEntity> findAllConUsuarioYRoles();
+
+    // Cuántas credenciales tienen un rol (por ejemplo, cuántos ADMIN quedan)
+    long countByRoles_Role(Role role);
 }

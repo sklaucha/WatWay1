@@ -24,6 +24,7 @@ public class AdminService {
     private final CredentialsRepository credentialsRepository;
     private final RoleRepository roleRepository;
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioActualProvider usuarioActual;
 
     @Transactional(readOnly = true)
     public List<AdminUsuarioDTO> listarUsuarios() {
@@ -60,6 +61,36 @@ public class AdminService {
                 .orElseThrow(() -> new IllegalArgumentException("Rol inválido"));
 
         credentials.getRoles().add(roleEntity);
+        credentialsRepository.save(credentials);
+    }
+
+    // Quita un rol. Para ADMIN hay dos reglas:
+    //  - un admin no se puede quitar el rol a sí mismo (evita quedarse afuera por error)
+    //  - no se puede quitar el último admin (el sistema quedaría sin administrador)
+    // El cambio rige desde la próxima petición: el filtro JWT lee los roles de la base.
+    public void quitarRol(Long credentialId, String rolNombre) {
+        CredentialsEntity credentials = credentialsRepository.findById(credentialId)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado")); // -> 404
+
+        Role role;
+        try {
+            role = Role.valueOf(rolNombre.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Rol inválido"); // -> 400
+        }
+
+        boolean loTiene = credentials.getRoles().stream().anyMatch(r -> r.getRole() == role);
+        if (!loTiene)
+            throw new IllegalArgumentException("El usuario no tiene el rol " + role.name());
+
+        if (role == Role.ADMIN) {
+            if (credentials.getId().equals(usuarioActual.getCredenciales().getId()))
+                throw new IllegalArgumentException("No podés quitarte el rol de administrador a vos mismo");
+            if (credentialsRepository.countByRoles_Role(Role.ADMIN) <= 1)
+                throw new IllegalArgumentException("No se puede quitar el último administrador del sistema");
+        }
+
+        credentials.getRoles().removeIf(r -> r.getRole() == role);
         credentialsRepository.save(credentials);
     }
 
