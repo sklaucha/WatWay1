@@ -12,6 +12,8 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
 
     boolean existsByEmail(String email);
 
-    List<UsuarioEntity> findByCiudadDestinoIgnoreCaseAndIdNotIn(String ciudadDestino, List<Long> ids);
+    // Candidatos: misma ciudad, que no evaluaste y que siguen activos
+    // (un usuario dado de baja o desactivado por el admin no aparece)
+    List<UsuarioEntity> findByCiudadDestinoIgnoreCaseAndIdNotInAndActivoTrue(String ciudadDestino, List<Long> ids);
 
 }

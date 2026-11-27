@@ -17,6 +17,11 @@ public interface ManejadorDenuncia {
     // Borra el contenido (si el tipo tiene contenido para borrar)
     void borrar(Long referenciaId);
 
+    // Qué pasa para quien denuncia apenas crea la denuncia (por defecto, nada).
+    // El de USUARIO le oculta ese perfil.
+    default void alDenunciar(UsuarioEntity denunciante, UsuarioEntity denunciado) {
+    }
+
     // USUARIO no tiene contenido: devuelve false
     default boolean tieneContenidoBorrable() {
         return true;

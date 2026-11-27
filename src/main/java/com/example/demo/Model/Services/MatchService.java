@@ -33,7 +33,7 @@ public class MatchService {
         UsuarioEntity actual = usuarioActual.getUsuario();
         List<Long> yaEvaluados = matchRepository.findUsuariosEvaluadosByOrigen(actual);
         yaEvaluados.add(actual.getId());
-        return usuarioRepository.findByCiudadDestinoIgnoreCaseAndIdNotIn(
+        return usuarioRepository.findByCiudadDestinoIgnoreCaseAndIdNotInAndActivoTrue(
                         actual.getCiudadDestino(), yaEvaluados)
                 .stream()
                 .map(usuarioMapper::toMatchDTO)
@@ -45,7 +45,7 @@ public class MatchService {
         List<Long> yaEvaluados = matchRepository.findUsuariosEvaluadosByOrigen(actual);
         yaEvaluados.add(actual.getId());
         List<UsuarioEntity> candidatos = new ArrayList<>(usuarioRepository
-                .findByCiudadDestinoIgnoreCaseAndIdNotIn(actual.getCiudadDestino(), yaEvaluados));
+                .findByCiudadDestinoIgnoreCaseAndIdNotInAndActivoTrue(actual.getCiudadDestino(), yaEvaluados));
         if (candidatos.isEmpty())
             throw new SinCandidatosException("No hay más candidatos disponibles.");
         Collections.shuffle(candidatos);
@@ -99,8 +99,32 @@ public class MatchService {
         List<UsuarioEntity> matchesComoDestino = matchRepository
                 .findByUsuarioDestinoAndMatched(actual, true).stream()
                 .map(MatchEntity::getUsuarioOrigen).collect(Collectors.toList());
+        // Los usuarios desactivados no se muestran
         return Stream.concat(matchesComoOrigen.stream(), matchesComoDestino.stream())
+                .filter(UsuarioEntity::isActivo)
                 .distinct().map(usuarioMapper::toMatchDTO).collect(Collectors.toList());
+    }
+
+    // Oculta un perfil para "origen" (se usa al denunciarlo), como un bloqueo:
+    //  - si no lo había evaluado, se registra como dislike -> no le aparece más de candidato
+    //  - si tenían match, se deshace igual que en eliminarMatch -> sale de la lista y el chat se cierra
+    @Transactional
+    public void ocultarPerfil(UsuarioEntity origen, UsuarioEntity otro) {
+        List<MatchEntity> mios = matchRepository.findByUsuarioOrigenAndUsuarioDestino(origen, otro);
+        List<MatchEntity> suyos = matchRepository.findByUsuarioOrigenAndUsuarioDestino(otro, origen);
+
+        if (mios.isEmpty()) {
+            matchRepository.save(MatchEntity.builder()
+                    .usuarioOrigen(origen).usuarioDestino(otro).liked(false).matched(false).build());
+        } else {
+            mios.forEach(m -> {
+                m.setLiked(false);
+                m.setMatched(false);
+            });
+            matchRepository.saveAll(mios);
+        }
+        suyos.forEach(m -> m.setMatched(false));
+        matchRepository.saveAll(suyos);
     }
 
     // Deshacer un match: no se borran las filas, se marcan como "no match".

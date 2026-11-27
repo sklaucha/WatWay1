@@ -4,6 +4,7 @@ import com.example.demo.Model.Entities.UsuarioEntity;
 import com.example.demo.Model.Enums.TipoDenuncia;
 import com.example.demo.Model.Excepciones.UsuarioNotFoundException;
 import com.example.demo.Model.Repository.UsuarioRepository;
+import com.example.demo.Model.Services.MatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class ManejadorDenunciaUsuario implements ManejadorDenuncia {
 
     private final UsuarioRepository usuarioRepository;
+    private final MatchService matchService;
 
     @Override
     public TipoDenuncia tipo() {
@@ -26,6 +28,13 @@ public class ManejadorDenunciaUsuario implements ManejadorDenuncia {
         String texto = "Perfil de " + u.getNombre() + " " + u.getApellido()
                 + (u.getDescripcion() != null && !u.getDescripcion().isBlank() ? ": " + u.getDescripcion() : "");
         return new ContenidoDenunciado(u, texto);
+    }
+
+    // Al denunciar un perfil, a quien denuncia no le aparece más (ni en Match ni en el chat).
+    // Para el resto sigue igual hasta que el admin decida.
+    @Override
+    public void alDenunciar(UsuarioEntity denunciante, UsuarioEntity denunciado) {
+        matchService.ocultarPerfil(denunciante, denunciado);
     }
 
     @Override

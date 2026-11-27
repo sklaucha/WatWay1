@@ -54,7 +54,8 @@ public class DenunciaService {
     @Transactional
     public DenunciaDTO crear(CrearDenunciaDTO dto) {
         UsuarioEntity actual = usuarioActual.getUsuario();
-        ContenidoDenunciado contenido = manejador(dto.getTipo()).buscar(dto.getReferenciaId(), actual);
+        ManejadorDenuncia manejador = manejador(dto.getTipo());
+        ContenidoDenunciado contenido = manejador.buscar(dto.getReferenciaId(), actual);
 
         if (contenido.autor().getId().equals(actual.getId()))
             throw new IllegalArgumentException("No podés denunciarte a vos mismo");
@@ -75,6 +76,9 @@ public class DenunciaService {
                 .descripcion(descripcion)
                 .contenidoDenunciado(recortar(contenido.texto()))
                 .build());
+
+        // Efecto inmediato para quien denuncia (STRATEGY: cada tipo decide; el de perfil lo oculta)
+        manejador.alDenunciar(actual, contenido.autor());
         return toDTO(denuncia);
     }
 
